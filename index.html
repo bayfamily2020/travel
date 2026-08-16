@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="世界旅行650打卡清单：经典目的地、节日庆典、徒步朝圣与特色体验。" />
+  <title>世界旅行650打卡</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main>
+    <section class="hero"><div class="hero-inner"><nav><span class="brand-mark">W650</span><span>世界旅行打卡</span><a href="#list">开始探索 ↓</a></nav><div class="eyebrow">THE ULTIMATE TRAVEL CHECKLIST</div><h1>世界很大，<br><em>你体验了多少？</em></h1><p class="intro">在500个经典目的地之上，新增150项世界节庆、朝圣徒步与代表性旅行体验。勾选你亲历过的项目，生成属于自己的环球旅行分数。</p><div class="score-board"><div><strong id="count">0</strong><span>/ 650 已打卡</span></div><div><strong id="score">0</strong><span id="max-score">/ 0 得分</span></div><div><strong id="progress">0%</strong><span>环球完成度</span></div><div class="passport-stamp">EXPLORE<br>MORE</div></div><div class="progress-track"><i id="progress-bar"></i></div></div></section>
+    <section class="content" id="list"><div class="section-head"><div><span class="kicker">YOUR WORLD / 你的世界</span><h2>650项一生必去的地方与体验</h2></div><div class="legend"><span><b class="dot two"></b>特别有名 · 2分</span><span><b class="dot one"></b>一般有名 · 1分</span></div></div>
+      <div class="filters"><label class="search"><span>⌕</span><input id="query" placeholder="搜索地名、国家、节日或体验…"></label><select id="group" aria-label="按项目类型筛选"><option>全部类型</option><option>地点与景观</option><option>节日庆典</option><option>徒步与朝圣</option><option>特色体验</option></select><select id="continent" aria-label="按洲别筛选"><option>全部</option><option>亚洲</option><option>欧洲</option><option>美洲</option><option>非洲</option><option>大洋洲</option><option>南极洲</option></select><select id="fame" aria-label="按知名度筛选"><option>全部</option><option>特别有名</option><option>一般有名</option></select><select id="status" aria-label="按完成状态筛选"><option>全部</option><option>已去</option><option>未去</option></select><select id="sort" aria-label="排序"><option value="rank">按排名</option><option value="points">按分值</option><option value="country">按国家</option></select></div>
+      <div class="result-bar"><span>显示 <b id="shown">0</b> 个项目</span><button id="reset">清空打卡记录</button></div><div class="place-grid" id="grid"></div><div class="empty" id="empty" hidden>没有找到符合条件的项目，试试清除部分筛选。</div>
+    </section>
+    <footer><span>世界旅行650打卡</span><p>前500项参考 Lonely Planet Ultimate Travel List；另增150项全球节庆、朝圣徒步与代表性体验。特别有名每项2分，一般有名每项1分；数据只保存在你的浏览器中。</p></footer>
+  </main>
+  <script src="./app.js" defer></script>
+</body>
+</html>
