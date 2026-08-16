@@ -18,6 +18,8 @@ function updateSummary() {
   $("max-score").textContent = `/ ${max} 得分`;
   $("progress").textContent = `${progress}%`;
   $("progress-bar").style.width = `${progress}%`;
+  const levels = [[5,"井底观察员"],[15,"旅行菜鸟"],[30,"周末浪客"],[50,"资深旅人"],[70,"环球达人"],[101,"断腿级旅行家"]];
+  $("level").textContent = levels.find(([limit]) => progress < limit)[1];
 }
 
 function render() {
