@@ -18,7 +18,7 @@ function updateSummary() {
   $("max-score").textContent = `/ ${max} 得分`;
   $("progress").textContent = `${progress}%`;
   $("progress-bar").style.width = `${progress}%`;
-  const levels = [[5,"井底观察员"],[15,"旅行菜鸟"],[30,"周末浪客"],[50,"护照盖章狂魔"],[70,"环球达人"],[101,"断腿级旅行家"]];
+  const levels = [[5,"井底观察员"],[15,"驿站菜鸟"],[30,"周末浪客"],[50,"空中飞人"],[70,"环球达人"],[101,"断腿级行者"]];
   $("level").textContent = levels.find(([limit]) => progress < limit)[1];
 }
 
