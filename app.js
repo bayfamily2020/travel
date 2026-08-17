@@ -32,6 +32,13 @@ const featuredMedia = {
   148:{city:"Leshan",file:"Leshan Buddha Statue View.JPG"},
   173:{city:"Elmina",file:"Elmina Castle - Elmina, Ghana.jpg"},
   177:{city:"Estes Park",file:"Cloudy morning at bear lake (37317249226).jpg"},
+  190:{city:"Amsterdam",file:"Van Gogh - Starry Night - Google Art Project.jpg"},
+  208:{city:"New York City",file:"Times Square Panorama At Night (200279283).jpeg"},
+  209:{city:"El Nido",file:"Island lagoon in Bacuit Bay, El Nido, Palawan, Philippines.jpg"},
+  210:{city:"Cape Town",file:"Nelson Mandela's prison cell, Robben Island, South Africa.jpg"},
+  239:{city:"London",file:"Museo de Historia Natural, Londres, Inglaterra, 2022-11-25, DD 50-52 HDR.jpg"},
+  275:{city:"Yakushima",file:"Yaku-Island Shiratani-Unsui-Gorge.jpg"},
+  278:{city:"Furnace Creek",file:"Zabriskie Point Death Valley National park.jpeg"},
   217:{city:"Beijing",file:"Summer Palace scene 1.jpg"}
 };
 
