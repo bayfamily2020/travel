@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v4";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v5";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  563:{city:"Tenerife",file:"Lightning and the Milky way.jpg"},
   594:{city:"Chamonix",file:"A view of Mont Blanc from the Tour du Mont Blanc, 2007.jpg"},
   551:{city:"Black Rock City",file:"BM 2010 Centre Camp.jpg"},
   540:{city:"Dublin",file:"ST. PATRICK'S DAY PARADE 2007 - DUBLIN (425244888).jpg"},
