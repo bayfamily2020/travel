@@ -14,6 +14,8 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  572:{city:"Pokhara",file:"Sunrise Over Pokhara Peace Pagoda And Annapurna Range.jpg"},
+  571:{city:"Manang",file:"Thorong La pass overview - Annapurna Circuit, Nepal - panoramio.jpg"},
   505:{city:"Port of Spain",file:"Trinidad Carnival-5492.jpg"},
   471:{city:"Panama City",file:"Exclusa Miraflores Canal de Panama Panorama.jpg"},
   327:{city:"Ghanzi",file:"Kudu of kalahari.jpg"},
