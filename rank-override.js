@@ -1,4 +1,4 @@
-// Travel rank labels override. Keep 20%+ bands unchanged.
+// Travel rank labels override.
 updateSummary = function() {
   const score = places.reduce((sum, p) => sum + (visited.has(p.rank) ? p.points : 0), 0);
   const max = places.reduce((sum, p) => sum + p.points, 0);
@@ -16,18 +16,19 @@ updateSummary = function() {
     [8, "探头土拨鼠"],
     [10, "年假特种兵"],
     [12, "出逃的羊驼"],
-    [14, "跨国流窜犯"],
-    [16, "奔跑的走地鸡"],
-    [18, "人形行李箱"],
-    [20, "驿站老菜鸟"],
-    [30, "迁徙的羚羊"],
+    [14, "奔跑的走地鸡"],
+    [16, "护照磨损员"],
+    [18, "人形登机牌"],
+    [20, "祖国偶尔拥有我"],
+    [30, "跨国流窜犯"],
     [40, "漂流的海龟"],
-    [50, "追风的北极燕鸥"],
-    [60, "洄游的灰鲸"],
-    [70, "地球街溜子"],
-    [85, "伊本·白图泰"]
+    [50, "地球街溜子"],
+    [60, "人形行李箱"],
+    [70, "环球达人"],
+    [85, "伊本·白图泰"],
+    [95, "洄游的灰鲸"]
   ];
-  const level = progress >= 85 ? "外星人探针" : levels.find(([limit]) => progress < limit)[1];
+  const level = progress >= 95 ? "外星人卧底" : levels.find(([limit]) => progress < limit)[1];
   $("level").textContent = level;
   if ($("final-score")) $("final-score").textContent = score;
   if ($("final-max-score")) $("final-max-score").textContent = `/ ${max} 得分`;
