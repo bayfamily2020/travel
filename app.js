@@ -345,7 +345,7 @@ async function drawShareCard(score,max,progress,level){
   ctx.textAlign="left";ctx.fillStyle="#d7e1d9";ctx.font="600 25px sans-serif";ctx.fillText("环球旅行达人测评",185,95);
   ctx.fillStyle="#9fb5a7";ctx.font="20px sans-serif";ctx.fillText("MY WORLD TRAVEL FOOTPRINT",185,128);
   ctx.fillStyle="#fff";ctx.font='700 62px "Microsoft YaHei",sans-serif';ctx.fillText("我的环球旅行足迹",72,220);
-  ctx.fillStyle="#ef8458";ctx.font='700 152px "Microsoft YaHei",sans-serif';ctx.fillText(level,72,385);
+  ctx.fillStyle="#ef8458";let shareLevelFont=152;ctx.font=`700 ${shareLevelFont}px "Microsoft YaHei",sans-serif`;const levelWidth=ctx.measureText(level).width;if(levelWidth>936){shareLevelFont=Math.floor(shareLevelFont*936/levelWidth);ctx.font=`700 ${shareLevelFont}px "Microsoft YaHei",sans-serif`;}ctx.fillText(level,72,385);
   ctx.fillStyle="#bfd0c3";ctx.font="24px sans-serif";ctx.fillText("当前旅行段位",76,430);
   roundedRect(ctx,72,470,936,170,28,"rgba(255,255,255,.08)");
   ctx.fillStyle="#fff";ctx.font="700 76px Georgia";ctx.fillText(String(score),112,562);
@@ -392,7 +392,7 @@ function updateSummary() {
   $("max-score").textContent = `/ ${max} 得分`;
   $("progress").textContent = `${progress}%`;
   $("progress-bar").style.width = `${progress}%`;
-  const levels = [[5,"井底观察员"],[15,"点水的蜻蜓"],[20,"驿站菜鸟"],[30,"迁徙的羚羊"],[40,"漂流的海龟"],[50,"追风的北极燕鸥"],[60,"洄游的灰鲸"],[70,"环球达人"],[85,"伊本·白图泰"]];
+  const levels = [[2,"井底观察员"],[3.5,"探头的土拨鼠"],[5,"赶路的企鹅"],[6.5,"溜达的刺猬"],[8,"点水的蜻蜓"],[10,"搬家的寄居蟹"],[12,"串门的浣熊"],[14,"出逃的羊驼"],[16,"奔跑的走地鸡"],[18,"驿站的菜鸟"],[19,"赶场的麻雀"],[20,"跳跃的袋鼠"],[30,"迁徙的羚羊"],[40,"漂流的海龟"],[50,"追风的北极燕鸥"],[60,"洄游的灰鲸"],[70,"地球街溜子"],[85,"伊本·白图泰"]];
   const level = progress >= 85 ? "外星人探针" : levels.find(([limit]) => progress < limit)[1];
   $("level").textContent = level;
   if ($("final-score")) $("final-score").textContent = score;
