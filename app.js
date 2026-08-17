@@ -353,6 +353,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const saved = localStorage.getItem(STORAGE_KEY);
     visited = new Set(saved ? JSON.parse(saved) : base.filter(p => p.visited).map(p => p.rank));
     document.querySelectorAll("input,select").forEach(el => el.addEventListener("input", render));
+    const countryShortcut = $("country-sort-shortcut");
+    if (countryShortcut) countryShortcut.addEventListener("click", () => { $("sort").value = "country"; render(); });
     $("grid").addEventListener("click", e => { const card=e.target.closest("[data-rank]"); if(!card)return; const rank=Number(card.dataset.rank); visited.has(rank)?visited.delete(rank):visited.add(rank); save(); render(); });
     $("reset").addEventListener("click", () => { if(confirm("确定要清空这个浏览器里的全部打卡记录吗？")){visited.clear();save();render();} });
     render();
