@@ -96,6 +96,8 @@ const featuredMedia = {
   646:{city:"Big Sur",file:"Bixby Creek Bridge, California, USA - May 2013.jpg"},
   649:{city:"Uyuni",file:"Luminous Salar de Uyuni (ann22042q).jpg"},
   650:{city:"King Salmon",file:"Grizzly Bear Fishing Brooks Falls.jpg"},
+  643:{city:"El Calafate",file:"Argentinian gaucho riding horse.jpg"},
+  644:{city:"Mendoza",file:"Vineyard in Mendoza, Argentina.jpg"},
 };
 
 function englishPart(value) {
