@@ -45,6 +45,10 @@ const featuredMedia = {
   350:{city:"Moorea",file:"DSC00041 French Polynésia Mooréa Island Lagoon Hauru (8076082336).jpg"},
   448:{city:"Taipei",file:"View of Taipei, Taiwan Night Skyline 2019.jpg"},
   476:{city:"Lotofaga",file:"To Sua Ocean Trench, Upolu, Samoa - August 2016.jpg"},
+  615:{city:"Kokoda",file:"Kokoda track Papua New Guinea.JPG"},
+  623:{city:"Inari",file:"Reindeer farm, Inari, Suomi - Finland 2013-03-10 g.jpg"},
+  627:{city:"Göreme",file:"Cappadocia balloons.jpg"},
+  630:{city:"Kyoto",file:"Outdoor Tea Ceremony.jpg"},
   217:{city:"Beijing",file:"Summer Palace scene 1.jpg"}
 };
 
