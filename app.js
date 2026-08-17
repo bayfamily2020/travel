@@ -1,7 +1,11 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v1";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
+let mediaObserver = null;
+let mediaCache = {};
+try { mediaCache = JSON.parse(localStorage.getItem(MEDIA_CACHE_KEY) || "{}"); } catch (_) { mediaCache = {}; }
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"})[c]);
@@ -20,13 +24,90 @@ const featuredMedia = {
   10:{city:"Istanbul",file:"Hagia Sophia Mars 2013.jpg"}
 };
 
-function mediaFor(p) {
-  const media = featuredMedia[p.rank];
-  if (!media) return null;
-  return {
-    city: media.city,
-    image: `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(media.file)}?width=720`
+function englishPart(value) {
+  const text = String(value || "").trim();
+  const parenthetical = text.match(/\(([^()]*)\)\s*$/);
+  if (parenthetical) return parenthetical[1].trim();
+  if (text.includes("/")) return text.split("/").pop().trim();
+  return text.replace(/[\u4e00-\u9fff]/g, "").trim();
+}
+
+function seededMedia(p) {
+  const featured = featuredMedia[p.rank];
+  if (featured) return {
+    city: featured.city,
+    image: `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(featured.file)}?width=720`
   };
+  return mediaCache[p.rank] || null;
+}
+
+function saveMediaCache() {
+  try { localStorage.setItem(MEDIA_CACHE_KEY, JSON.stringify(mediaCache)); } catch (_) {}
+}
+
+async function fetchMedia(p) {
+  if (seededMedia(p)) return seededMedia(p);
+  const query = `${englishPart(p.name)} ${englishPart(p.country)}`;
+  const params = new URLSearchParams({
+    action:"query", format:"json", origin:"*", generator:"search",
+    gsrsearch:query, gsrnamespace:"0", gsrlimit:"1",
+    prop:"pageimages|coordinates", piprop:"thumbnail", pithumbsize:"720", colimit:"1"
+  });
+  let image = "";
+  let city = "";
+  try {
+    const response = await fetch(`https://en.wikipedia.org/w/api.php?${params}`);
+    if (!response.ok) throw new Error("Wikipedia lookup failed");
+    const json = await response.json();
+    const page = Object.values(json.query?.pages || {})[0];
+    image = page?.thumbnail?.source || "";
+    const coord = page?.coordinates?.[0];
+    if (coord) {
+      const geoUrl = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
+      geoUrl.searchParams.set("latitude", coord.lat);
+      geoUrl.searchParams.set("longitude", coord.lon);
+      geoUrl.searchParams.set("localityLanguage", "en");
+      const geoResponse = await fetch(geoUrl);
+      if (geoResponse.ok) {
+        const geo = await geoResponse.json();
+        city = geo.city || geo.locality || geo.principalSubdivision || "";
+      }
+    }
+  } catch (error) {
+    console.warn("Destination media lookup:", query, error);
+  }
+  const result = { image, city: city || englishPart(p.country) || "Worldwide" };
+  mediaCache[p.rank] = result;
+  saveMediaCache();
+  return result;
+}
+
+function applyMedia(rank, media) {
+  document.querySelectorAll(`[data-rank="${rank}"]`).forEach(card => {
+    const img = card.querySelector(".place-image");
+    const placeholder = card.querySelector(".image-placeholder");
+    const city = card.querySelector(".gateway-city");
+    if (img && media.image) {
+      img.src = media.image;
+      img.hidden = false;
+      if (placeholder) placeholder.hidden = true;
+    }
+    if (city) city.textContent = media.city;
+  });
+}
+
+function hydrateVisibleMedia() {
+  if (mediaObserver) mediaObserver.disconnect();
+  mediaObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      mediaObserver.unobserve(entry.target);
+      const rank = Number(entry.target.dataset.rank);
+      const p = places.find(item => item.rank === rank);
+      if (p) fetchMedia(p).then(media => applyMedia(rank, media));
+    });
+  }, {rootMargin:"500px 0px"});
+  document.querySelectorAll(".place-card[data-rank]").forEach(card => mediaObserver.observe(card));
 }
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify([...visited])); }
@@ -116,9 +197,12 @@ function render() {
   $("empty").hidden = filtered.length !== 0;
   $("grid").innerHTML = filtered.map(p => {
     const done = visited.has(p.rank);
-    const media = mediaFor(p);
-    return `<button class="place-card ${done ? "done" : ""} ${media ? "with-image" : ""}" data-rank="${p.rank}" aria-pressed="${done}">${media ? `<span class="image-wrap"><img class="place-image" src="${escapeHtml(media.image)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async"><span class="image-credit">Wikimedia Commons</span></span>` : ""}<span class="rank">#${String(p.rank).padStart(3,"0")}</span><span class="points p${p.points}">${p.points} 分</span><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><span class="place-name">${escapeHtml(p.name)}</span><span class="meta"><b>${escapeHtml(p.continent)}</b> · ${escapeHtml(p.country)}</span>${media ? `<span class="gateway"><b>Gateway city</b> · ${escapeHtml(media.city)}</span>` : ""}<span class="description">${escapeHtml(descriptionFor(p))}</span><span class="type">${escapeHtml(p.group)} · ${escapeHtml(p.type)}</span>${p.evidence ? '<span class="evidence">已有旅行记录</span>' : ""}</button>`;
+    const media = seededMedia(p);
+    const image = media?.image || "";
+    const city = media?.city || "Locating…";
+    return `<button class="place-card ${done ? "done" : ""} with-image" data-rank="${p.rank}" aria-pressed="${done}"><span class="image-wrap"><img class="place-image" ${image ? `src="${escapeHtml(image)}"` : "hidden"} alt="${escapeHtml(p.name)}" loading="lazy" decoding="async"><span class="image-placeholder" ${image ? "hidden" : ""}>EXPLORE</span><span class="image-credit">Wikimedia Commons</span></span><span class="rank">#${String(p.rank).padStart(3,"0")}</span><span class="points p${p.points}">${p.points} 分</span><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><span class="place-name">${escapeHtml(p.name)}</span><span class="meta"><b>${escapeHtml(p.continent)}</b> · ${escapeHtml(p.country)}</span><span class="gateway"><b>Gateway city</b> · <span class="gateway-city">${escapeHtml(city)}</span></span><span class="description">${escapeHtml(descriptionFor(p))}</span><span class="type">${escapeHtml(p.group)} · ${escapeHtml(p.type)}</span>${p.evidence ? '<span class="evidence">已有旅行记录</span>' : ""}</button>`;
   }).join("");
+  hydrateVisibleMedia();
   updateSummary();
 }
 
