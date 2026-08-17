@@ -307,6 +307,82 @@ function descriptionFor(p) {
   return descriptions[p.type] || `${name}兼具风景、文化与在地故事，是值得留出时间深入体验的一站。`;
 }
 
+let shareQrPromise = null;
+
+function roundedRect(ctx,x,y,w,h,r,fill){
+  ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();
+}
+
+function getShareQr(){
+  if(shareQrPromise)return shareQrPromise;
+  shareQrPromise=new Promise(resolve=>{
+    const finish=src=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src=src;};
+    if(window.QRCode){
+      const holder=document.createElement("div");
+      holder.style.cssText="position:fixed;left:-9999px;top:-9999px";
+      document.body.appendChild(holder);
+      new QRCode(holder,{text:"https://bayfamily2020.github.io/travel/",width:240,height:240,colorDark:"#17211b",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
+      setTimeout(()=>{const canvas=holder.querySelector("canvas");const image=holder.querySelector("img");const src=canvas?.toDataURL("image/png")||image?.src||"";holder.remove();src?finish(src):resolve(null);},80);
+    }else{
+      const img=new Image();img.crossOrigin="anonymous";img.onload=()=>resolve(img);img.onerror=()=>resolve(null);img.src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data="+encodeURIComponent("https://bayfamily2020.github.io/travel/");
+    }
+  });
+  return shareQrPromise;
+}
+
+async function drawShareCard(score,max,progress,level){
+  const canvas=$("share-card");if(!canvas)return;
+  const ctx=canvas.getContext("2d");
+  const done=places.filter(p=>visited.has(p.rank));
+  const countryCount=new Set(done.map(p=>String(p.country).split(/\s*[\/(（]/)[0].trim()).filter(Boolean)).size;
+  const continentCount=new Set(done.map(p=>p.continent).filter(Boolean)).size;
+  const famousCount=done.filter(p=>p.points===2).length;
+  ctx.clearRect(0,0,1080,1350);ctx.fillStyle="#173b31";ctx.fillRect(0,0,1080,1350);
+  ctx.fillStyle="rgba(221,107,61,.16)";ctx.beginPath();ctx.arc(970,100,300,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="rgba(255,255,255,.04)";for(let x=-100;x<1200;x+=72)for(let y=0;y<1350;y+=72)ctx.fillRect(x+((y/72)%2)*36,y,3,3);
+  ctx.strokeStyle="#ef8458";ctx.lineWidth=5;ctx.beginPath();ctx.arc(105,100,55,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle="#ff9a69";ctx.font="700 28px Georgia";ctx.textAlign="center";ctx.fillText("W650",105,110);
+  ctx.textAlign="left";ctx.fillStyle="#d7e1d9";ctx.font="600 25px sans-serif";ctx.fillText("环球旅行达人测评",185,95);
+  ctx.fillStyle="#9fb5a7";ctx.font="20px sans-serif";ctx.fillText("MY WORLD TRAVEL FOOTPRINT",185,128);
+  ctx.fillStyle="#fff";ctx.font='700 68px "Microsoft YaHei",sans-serif';ctx.fillText("我的环球旅行足迹",72,250);
+  ctx.fillStyle="#ef8458";ctx.font='700 76px "Microsoft YaHei",sans-serif';ctx.fillText(level,72,360);
+  ctx.fillStyle="#bfd0c3";ctx.font="24px sans-serif";ctx.fillText("当前旅行段位",76,405);
+  roundedRect(ctx,72,458,936,178,28,"rgba(255,255,255,.08)");
+  ctx.fillStyle="#fff";ctx.font="700 76px Georgia";ctx.fillText(String(score),112,555);
+  ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText("/ "+max+" 得分",112,598);
+  ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="700 76px Georgia";ctx.fillText(progress+"%",968,555);
+  ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText("环球完成度",968,598);ctx.textAlign="left";
+  const stats=[["已打卡项目",done.length],["国家／地区",countryCount],["覆盖大洲",continentCount],["经典项目",famousCount]];
+  stats.forEach(([label,value],i)=>{const x=72+(i%2)*476,y=682+Math.floor(i/2)*158;roundedRect(ctx,x,y,460,136,22,"rgba(255,255,255,.07)");ctx.fillStyle="#fff";ctx.font="700 52px Georgia";ctx.fillText(String(value),x+30,y+70);ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText(label,x+30,y+108);});
+  roundedRect(ctx,72,1012,250,250,20,"#fff");
+  const qr=await getShareQr();if(qr)ctx.drawImage(qr,87,1027,220,220);
+  ctx.fillStyle="#fff";ctx.font='700 34px "Microsoft YaHei",sans-serif';ctx.fillText("扫码测测你的旅行段位",365,1100);
+  ctx.fillStyle="#bfd0c3";ctx.font="23px sans-serif";ctx.fillText("650项环球旅行目的地与体验",365,1145);
+  ctx.fillStyle="#ff9a69";ctx.font="22px sans-serif";ctx.fillText("bayfamily2020.github.io/travel/",365,1202);
+  ctx.fillStyle="#8fa99a";ctx.font="18px sans-serif";ctx.fillText("数据仅保存在你的浏览器中",365,1242);
+  ctx.fillStyle="#ef8458";ctx.fillRect(0,1335,1080,15);
+}
+
+function shareCanvasBlob(){
+  return new Promise(resolve=>$("share-card").toBlob(resolve,"image/png",1));
+}
+
+async function downloadShareCard(){
+  const status=$("share-status");if(status)status.textContent="正在生成图片…";
+  const blob=await shareCanvasBlob();if(!blob){if(status)status.textContent="图片生成失败，请稍后重试。";return;}
+  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="我的环球旅行足迹.png";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  if(status)status.textContent="图片已生成，可以分享到朋友圈。";
+}
+
+async function shareTravelCard(){
+  const status=$("share-status");if(status)status.textContent="正在准备分享卡片…";
+  const blob=await shareCanvasBlob();if(!blob){if(status)status.textContent="图片生成失败，请稍后重试。";return;}
+  const file=new File([blob],"我的环球旅行足迹.png",{type:"image/png"});
+  if(navigator.share&&navigator.canShare?.({files:[file]})){
+    try{await navigator.share({title:"我的环球旅行足迹",text:"测测你是真正的旅行达人吗？",files:[file]});if(status)status.textContent="分享卡片已打开。";}catch(error){if(error.name!=="AbortError"&&status)status.textContent="未能直接分享，请使用“保存图片”。";}
+  }else{await downloadShareCard();if(status)status.textContent="当前浏览器不支持直接分享，图片已保存。";}
+}
+
 function updateSummary() {
   const score = places.reduce((sum, p) => sum + (visited.has(p.rank) ? p.points : 0), 0);
   const max = places.reduce((sum, p) => sum + p.points, 0);
@@ -323,6 +399,7 @@ function updateSummary() {
   if ($("final-max-score")) $("final-max-score").textContent = `/ ${max} 得分`;
   if ($("final-progress")) $("final-progress").textContent = `${progress}%`;
   if ($("final-level")) $("final-level").textContent = level;
+  drawShareCard(score, max, progress, level);
 }
 
 function renderPagination(total) {
@@ -375,6 +452,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     $("grid").addEventListener("click", e => { const card=e.target.closest("[data-rank]"); if(!card)return; const rank=Number(card.dataset.rank); visited.has(rank)?visited.delete(rank):visited.add(rank); save(); render(); });
     $("reset").addEventListener("click", () => { if(confirm("确定要清空这个浏览器里的全部打卡记录吗？")){visited.clear();save();render();} });
+    $("download-card-button")?.addEventListener("click", downloadShareCard);
+    $("share-card-button")?.addEventListener("click", shareTravelCard);
     render();
   } catch (error) {
     $("grid").innerHTML = '<div class="empty">数据加载失败，请刷新页面重试。</div>';
