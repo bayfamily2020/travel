@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v7";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v8";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -122,7 +122,7 @@ const featuredMedia = {
   602:{city:"Theth",file:"The Accursed Mountains 05.jpg"},
   210:{city:"Cape Town",file:"Robben Island Maximum Security Prison administration building.jpg"},
   240:{city:"Delhi",file:"View of Chandni Chowk, Old Delhi, India - September 2014.jpg"},
-  248:{city:"Kutchan",file:"2010-02.mt yotei.jpg"},
+  248:{city:"Baa Atoll",file:"Anantara Kihavah - Aerial Hero Shot 2024.jpg"},
   255:{city:"Rhodes",file:"Rhodes Old Town Street of Knights 8.JPG"},
   284:{city:"Taveuni",file:"Fiji; Reef Near Six Senses - 52487847681.jpg"},
   421:{city:"Buenos Aires",file:"Art Nouveau Type Tombs Recoleta Cemetery Buenos Aires Argentina.jpg"},
