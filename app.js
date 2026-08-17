@@ -5,6 +5,8 @@ let places = [];
 let visited = new Set();
 let mediaObserver = null;
 let mediaCache = {};
+const PAGE_SIZE = 100;
+let currentPage = 1;
 try { mediaCache = JSON.parse(localStorage.getItem(MEDIA_CACHE_KEY) || "{}"); } catch (_) { mediaCache = {}; }
 
 function escapeHtml(value) {
@@ -323,6 +325,14 @@ function updateSummary() {
   if ($("final-level")) $("final-level").textContent = level;
 }
 
+function renderPagination(total) {
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  currentPage = Math.min(currentPage, totalPages);
+  const options = Array.from({length:totalPages}, (_,i) => `<option value="${i+1}" ${currentPage === i+1 ? "selected" : ""}>第 ${i+1} / ${totalPages} 页</option>`).join("");
+  const markup = `<button type="button" data-page="${currentPage-1}" ${currentPage === 1 ? "disabled" : ""}>← 上一页</button><label><span>页面</span><select data-page-jump aria-label="选择页码">${options}</select></label><button type="button" data-page="${currentPage+1}" ${currentPage === totalPages ? "disabled" : ""}>下一页 →</button>`;
+  document.querySelectorAll(".pagination").forEach(el => { el.innerHTML = markup; el.hidden = total === 0; });
+}
+
 function render() {
   const q = $("query").value.trim().toLowerCase();
   const continent = $("continent").value, group = $("group").value;
@@ -332,9 +342,13 @@ function render() {
     const haystack = `${p.name} ${p.country} ${p.type} ${p.group} ${descriptionFor(p)}`.toLowerCase();
     return (!q || haystack.includes(q)) && (continent === "全部" || p.continent === continent) && (group === "全部类型" || p.group === group) && (fame === "全部" || p.fame.startsWith(fame)) && (status === "全部" || (status === "已去" ? done : !done));
   }).sort((a,b) => sort === "points" ? b.points-a.points || a.rank-b.rank : sort === "country" ? a.country.localeCompare(b.country,"zh-CN") : a.rank-b.rank);
-  $("shown").textContent = filtered.length;
+  renderPagination(filtered.length);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+  const end = start + pageItems.length;
+  $("shown").textContent = filtered.length ? `${start + 1}–${end} / ${filtered.length} 个项目` : "0 个项目";
   $("empty").hidden = filtered.length !== 0;
-  $("grid").innerHTML = filtered.map(p => {
+  $("grid").innerHTML = pageItems.map(p => {
     const done = visited.has(p.rank);
     const media = seededMedia(p);
     const image = media?.image || "";
@@ -352,9 +366,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
     visited = new Set(saved ? JSON.parse(saved) : base.filter(p => p.visited).map(p => p.rank));
-    document.querySelectorAll("input,select").forEach(el => el.addEventListener("input", render));
+    document.querySelectorAll(".filters input,.filters select").forEach(el => el.addEventListener("input", () => { currentPage = 1; render(); }));
     const countryShortcut = $("country-sort-shortcut");
-    if (countryShortcut) countryShortcut.addEventListener("click", () => { $("sort").value = "country"; render(); });
+    if (countryShortcut) countryShortcut.addEventListener("click", () => { $("sort").value = "country"; currentPage = 1; render(); });
+    document.querySelectorAll(".pagination").forEach(pager => {
+      pager.addEventListener("click", e => { const button = e.target.closest("[data-page]"); if (!button || button.disabled) return; currentPage = Number(button.dataset.page); render(); $("list").scrollIntoView({behavior:"smooth"}); });
+      pager.addEventListener("change", e => { if (!e.target.matches("[data-page-jump]")) return; currentPage = Number(e.target.value); render(); $("list").scrollIntoView({behavior:"smooth"}); });
+    });
     $("grid").addEventListener("click", e => { const card=e.target.closest("[data-rank]"); if(!card)return; const rank=Number(card.dataset.rank); visited.has(rank)?visited.delete(rank):visited.add(rank); save(); render(); });
     $("reset").addEventListener("click", () => { if(confirm("确定要清空这个浏览器里的全部打卡记录吗？")){visited.clear();save();render();} });
     render();
