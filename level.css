@@ -16,7 +16,13 @@
 .image-credit{position:absolute;right:7px;bottom:6px;padding:3px 6px;background:rgba(23,33,27,.72);color:#fff;font-size:9px;letter-spacing:.04em;border-radius:2px}
 .gateway{display:block;margin-top:6px;color:#9a4a2e;font-size:11px;letter-spacing:.04em}
 .gateway b{color:var(--forest);font-weight:700}
-@media(max-width:580px){.place-card.with-image{min-height:0}.image-wrap{width:calc(100% + 28px);height:160px;margin:-13px -14px 12px}}
+@media(max-width:580px){
+  .place-card,.place-card.with-image{min-height:0!important;height:auto!important}
+  .place-card.with-image{display:flex!important;justify-content:flex-start!important}
+  .place-card.with-image .type{margin-top:6px!important;padding-top:0!important}
+  .place-card.with-image .best-months{margin-bottom:0!important}
+  .image-wrap{width:calc(100% + 28px);height:160px;margin:-13px -14px 12px}
+}
 
 .image-placeholder{display:grid;place-items:center;width:100%;height:100%;background:linear-gradient(135deg,#244c3d,#809b83);color:rgba(255,255,255,.76);font:italic 16px Georgia,serif;letter-spacing:.18em}
 .place-image[hidden],.image-placeholder[hidden]{display:none}
