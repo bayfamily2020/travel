@@ -46,7 +46,7 @@ const featuredMedia = {
   476:{city:"Lotofaga",file:"To Sua Ocean Trench, Upolu, Samoa - August 2016.jpg"},
   55:{city:"Paris",file:"NotreDameDeParis.jpg"},
   64:{city:"Portree",file:"Old Man of Storr, Isle of Skye, Scotland - Diliff.jpg"},
-  84:{city:"Keystone",file:"Mount Rushmore National Memorial MORU2014.jpg"},
+  84:{city:"Kayenta",file:"Monument Valley Sunset MC.jpg"},
   117:{city:"Hong Kong",file:"View of Hong Kong from Victoria Peak.jpg"},
   125:{city:"Oban",file:"Stewart Island as seen from i plane.jpg"},
   195:{city:"Paju",file:"Joint Security Area (3069693747).jpg"},
