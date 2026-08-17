@@ -14,6 +14,12 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  594:{city:"Chamonix",file:"A view of Mont Blanc from the Tour du Mont Blanc, 2007.jpg"},
+  551:{city:"Black Rock City",file:"BM 2010 Centre Camp.jpg"},
+  540:{city:"Dublin",file:"ST. PATRICK'S DAY PARADE 2007 - DUBLIN (425244888).jpg"},
+  385:{city:"Bekopaka",file:"Relief karstique, Parc Tsingy de Bemaraha, Madagascar.jpg"},
+  302:{city:"Morondava",file:"Sunset on the Avenue of the Baobabs.jpg"},
+  132:{city:"Nara",file:"Daibutsu of Todaiji 2.jpg"},
   648:{city:"Geiranger",file:"Geirangerfjord boats.jpg"},
   572:{city:"Pokhara",file:"Sunrise Over Pokhara Peace Pagoda And Annapurna Range.jpg"},
   571:{city:"Manang",file:"Thorong La pass overview - Annapurna Circuit, Nepal - panoramio.jpg"},
@@ -118,7 +124,6 @@ const featuredMedia = {
   255:{city:"Rhodes",file:"Rhodes Old Town Street of Knights 8.JPG"},
   284:{city:"Taveuni",file:"Fiji; Reef Near Six Senses - 52487847681.jpg"},
   421:{city:"Buenos Aires",file:"Art Nouveau Type Tombs Recoleta Cemetery Buenos Aires Argentina.jpg"},
-  431:{city:"Cardiff",file:"St Fagans Museum Main Building 2018.jpg"},
   460:{city:"Sainte-Rose",file:"Fournaise (119943209).jpeg"},
   560:{city:"Albuquerque",file:"Mass Ascension 2012.jpg"},
   569:{city:"Fethiye",file:"The Lycian Way - 2014.10 - panoramio.jpg"},
