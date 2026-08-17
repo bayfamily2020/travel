@@ -18,3 +18,5 @@
 /* Extra-strong card outlines */
 .place-card{border-width:2px;border-color:#918775}.place-card.done{border-color:#56745e}
 @media(max-width:580px){.place-card{border-width:3px}}
+
+.visitor-counter{display:inline-flex;align-items:center;margin-left:auto;flex:0 0 auto}.visitor-counter img{display:block;height:24px;width:auto}@media(max-width:580px){.visitor-counter{margin-left:0;margin-top:4px}}
