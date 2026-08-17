@@ -20,3 +20,16 @@
 @media(max-width:580px){.place-card{border-width:3px}}
 
 .visitor-counter{display:inline-flex;align-items:center;margin-left:auto;flex:0 0 auto}.visitor-counter img{display:block;height:24px;width:auto}@media(max-width:580px){.visitor-counter{margin-left:0;margin-top:4px}}
+
+/* Compact mobile destination cards */
+@media(max-width:580px){
+  .place-grid{gap:10px}
+  .place-card{min-height:0;padding:13px 14px 12px;border-width:2px}
+  .rank{font-size:12px;line-height:1.2}
+  .points{right:47px;top:10px;font-size:10px;padding:3px 7px}
+  .check{right:12px;top:8px;width:25px;height:25px}
+  .place-name{font-size:18px;line-height:1.25;margin:10px 62px 6px 0}
+  .meta{font-size:11px;line-height:1.35}
+  .type{padding-top:8px;font-size:10px;line-height:1.2}
+  .evidence{right:12px;bottom:10px;font-size:9px}
+}
