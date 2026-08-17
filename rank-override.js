@@ -1,6 +1,6 @@
 // Travel rank labels override. Keep 20%+ bands unchanged.
 updateSummary = function() {
-  const score = places.reduce((sum, p) => sum + (visited.has(p.rank) ? p.points : 0), 0;
+  const score = places.reduce((sum, p) => sum + (visited.has(p.rank) ? p.points : 0), 0);
   const max = places.reduce((sum, p) => sum + p.points, 0);
   const progress = max ? Math.round(score / max * 1000) / 10 : 0;
   $("count").textContent = visited.size;
