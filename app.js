@@ -446,7 +446,7 @@ function render() {
   const filtered = places.filter(p => {
     const done = visited.has(p.rank);
     const haystack = `${p.name} ${p.country} ${p.type} ${p.group} ${descriptionFor(p)}`.toLowerCase();
-    return (!q || haystack.includes(q)) && (continent === "全部" || p.continent === continent) && (group === "全部类型" || p.group === group) && (fame === "全部" || p.fame.startsWith(fame)) && (status === "全部" || (status === "已去" ? done : !done));
+    return (!q || haystack.includes(q)) && (continent === "全部" || p.continent === continent) && (group === "全部类型" || p.group === group) && (fame === "全部" || (fame === "此生必去" ? p.points === 2 : fame === "不去也行" ? p.points === 1 : p.fame.startsWith(fame))) && (status === "全部" || (status === "已去" ? done : !done));
   }).sort((a,b) => sort === "points" ? b.points-a.points || a.rank-b.rank : sort === "country" ? a.country.localeCompare(b.country,"zh-CN") : a.rank-b.rank);
   renderPagination(filtered.length);
   const start = (currentPage - 1) * PAGE_SIZE;
@@ -467,7 +467,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json`).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260817-fame`).then(r => r.json())));
     places = chunks.flat();
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
