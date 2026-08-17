@@ -34,13 +34,17 @@ drawShareCard = async function(score,max,progress,level){
   const ctx=canvas.getContext("2d");
   const text=travelDiagnosis(level);
   const centerX=540;
-  const maxWidth=330;
+  const maxWidth=370;
+  const panelTop=470;
+  const panelHeight=170;
+  const titleHeight=26;
+  const titleGap=10;
+  const lineHeight=38;
   ctx.textAlign="center";
   ctx.fillStyle="#ff9a69";
-  ctx.font='700 20px "Microsoft YaHei",sans-serif';
-  ctx.fillText("旅行诊断",centerX,512);
+  ctx.font='700 22px "Microsoft YaHei",sans-serif';
   ctx.fillStyle="#d7e1d9";
-  ctx.font='20px "Microsoft YaHei",sans-serif';
+  ctx.font='700 28px "Microsoft YaHei",sans-serif';
   const chars=Array.from(text);
   const lines=[];
   let line="";
@@ -49,7 +53,15 @@ drawShareCard = async function(score,max,progress,level){
     if(ctx.measureText(test).width>maxWidth && line){lines.push(line);line=ch;}else{line=test;}
   });
   if(line)lines.push(line);
-  lines.slice(0,3).forEach((l,i)=>ctx.fillText(l,centerX,548+i*30));
+  const visibleLines=lines.slice(0,3);
+  const contentHeight=titleHeight+titleGap+visibleLines.length*lineHeight;
+  const contentTop=panelTop+(panelHeight-contentHeight)/2;
+  ctx.fillStyle="#ff9a69";
+  ctx.font='700 22px "Microsoft YaHei",sans-serif';
+  ctx.fillText("旅行诊断",centerX,contentTop+22);
+  ctx.fillStyle="#d7e1d9";
+  ctx.font='700 28px "Microsoft YaHei",sans-serif';
+  visibleLines.forEach((l,i)=>ctx.fillText(l,centerX,contentTop+titleHeight+titleGap+28+i*lineHeight));
   ctx.textAlign="left";
 };
 
