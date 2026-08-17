@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v12";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v13";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  591:{city:"Springdale",file:"Zion Angels landing Panorama.jpg"},
   147:{city:"Lenakel",file:"Mount Yasur eruption 2006, Tanna Island, Vanuatu, VAN 0516.jpg"},
   567:{city:"Probolinggo",file:"Indonesia - Bromo (37395212635).jpg"},
   374:{city:"Jeju City",file:"Jeju - Seongsan Ilchulbong.jpg"},
