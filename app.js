@@ -31,6 +31,7 @@ const featuredMedia = {
   114:{city:"Ayutthaya",file:"Royal Palace of Ayutthaya.jpg"},
   115:{city:"Vatican City",file:"CAPPELLA SISTINA Ceiling.jpg"},
   148:{city:"Leshan",file:"Leshan Buddha Statue View.JPG"},
+  155:{city:"Orlando",file:"Magic Kingdom, Disney World.jpg"},
   173:{city:"Elmina",file:"Elmina Castle - Elmina, Ghana.jpg"},
   177:{city:"Estes Park",file:"Cloudy morning at bear lake (37317249226).jpg"},
   190:{city:"Amsterdam",file:"Van Gogh - Starry Night - Google Art Project.jpg"},
