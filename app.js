@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  648:{city:"Geiranger",file:"Geirangerfjord boats.jpg"},
   572:{city:"Pokhara",file:"Sunrise Over Pokhara Peace Pagoda And Annapurna Range.jpg"},
   571:{city:"Manang",file:"Thorong La pass overview - Annapurna Circuit, Nepal - panoramio.jpg"},
   505:{city:"Port of Spain",file:"Trinidad Carnival-5492.jpg"},
