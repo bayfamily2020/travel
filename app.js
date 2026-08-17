@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v8";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v9";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  374:{city:"Jeju City",file:"Jeju - Seongsan Ilchulbong.jpg"},
   151:{city:"Ponta Delgada",file:"Sao Miguel Island (Azores). Sete Cidades Caldera, Lagoa de Santiago, Azores.jpg"},
   563:{city:"Tenerife",file:"Lightning and the Milky way.jpg"},
   594:{city:"Chamonix",file:"A view of Mont Blanc from the Tour du Mont Blanc, 2007.jpg"},
