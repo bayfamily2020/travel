@@ -39,6 +39,12 @@ const featuredMedia = {
   239:{city:"London",file:"Museo de Historia Natural, Londres, Inglaterra, 2022-11-25, DD 50-52 HDR.jpg"},
   275:{city:"Yakushima",file:"Yaku-Island Shiratani-Unsui-Gorge.jpg"},
   278:{city:"Furnace Creek",file:"Zabriskie Point Death Valley National park.jpeg"},
+  290:{city:"Hadibu",file:"Dragon's Blood Trees, Socotra Is. (24142290504).jpg"},
+  312:{city:"Kuala Lumpur",file:"Petronas Panorama II.jpg"},
+  330:{city:"Vieques",file:"Parquera Bio Bay 250.jpg"},
+  350:{city:"Moorea",file:"DSC00041 French Polynésia Mooréa Island Lagoon Hauru (8076082336).jpg"},
+  448:{city:"Taipei",file:"View of Taipei, Taiwan Night Skyline 2019.jpg"},
+  476:{city:"Lotofaga",file:"To Sua Ocean Trench, Upolu, Samoa - August 2016.jpg"},
   217:{city:"Beijing",file:"Summer Palace scene 1.jpg"}
 };
 
