@@ -64,7 +64,7 @@ const featuredMedia = {
   368:{city:"Belize City",file:"Glovers Reef atoll belize 20221222 140052.jpg"},
   446:{city:"Debar",file:"Bigorski Monastery, N. Macedonia.jpg"},
   452:{city:"Kyiv",file:"Kyiv Pechersk Lavra - detailed panoramic view.jpg"},
-  217:{city:"Beijing",file:"Summer Palace scene 1.jpg"}
+  217:{city:"Beijing",file:"Summer Palace scene 1.jpg"},
   397:{city:"Taipei",file:"National Palace Museum Front View.jpg"},
   490:{city:"Oban",file:"Fingals cave Staffa Iona Scotland deepInside.jpg"},
   491:{city:"Pisa",file:"Leaning Tower Pisa - Front view.jpg"},
