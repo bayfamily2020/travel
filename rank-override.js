@@ -151,7 +151,26 @@ async function nearestSettlement(lat, lon) {
       return a.city || a.town || a.village || a.municipality || a.hamlet || a.suburb || "";
     }
   } catch (_) {}
+
+  try {
+    const photon = new URL("https://photon.komoot.io/reverse");
+    photon.searchParams.set("lat", lat);
+    photon.searchParams.set("lon", lon);
+    photon.searchParams.set("lang", "en");
+    const response = await fetch(photon);
+    if (response.ok) {
+      const data = await response.json();
+      const properties = data.features?.[0]?.properties || {};
+      const nearby = properties.city || properties.town || properties.village ||
+        properties.municipality || properties.district || properties.county || "";
+      if (nearby) return String(nearby).trim();
+    }
+  } catch (_) {}
   return "";
+}
+
+function isUnavailableGateway(city) {
+  return !city || /nearest city unavailable|locating/i.test(String(city));
 }
 
 seededMedia = function(p) {
@@ -162,6 +181,7 @@ seededMedia = function(p) {
   };
   const cached = mediaCache[p.rank];
   if (!cached) return null;
+  if (isUnavailableGateway(cached.city)) return cached.image ? {image: cached.image, city: ""} : null;
   if (isCountryLikeGateway(cached.city, p.country)) return cached.image ? {image: cached.image, city: ""} : null;
   return cached;
 };
@@ -174,7 +194,7 @@ fetchMedia = async function(p) {
   };
 
   const cached = mediaCache[p.rank];
-  if (cached?.image && cached?.city && !isCountryLikeGateway(cached.city, p.country)) return cached;
+  if (cached?.image && cached?.city && !isUnavailableGateway(cached.city) && !isCountryLikeGateway(cached.city, p.country)) return cached;
 
   const query = `${englishPart(p.name)} ${englishPart(p.country)}`;
   const params = new URLSearchParams({
@@ -199,8 +219,20 @@ fetchMedia = async function(p) {
 
   if (!image) image = await fetchCommonsImage(query);
   if (isCountryLikeGateway(city, p.country)) city = "";
-  const result = {image, city: city || "Nearest city unavailable"};
-  mediaCache[p.rank] = result;
+  const result = {image, city};
+  if (city) mediaCache[p.rank] = result;
+  else if (image) mediaCache[p.rank] = {image, city:""};
   saveMediaCache();
   return result;
+};
+
+// Do not present a failed lookup as if it were a city name.
+// Empty results remain uncached as cities and will be retried on a later visit.
+const baseApplyMedia = applyMedia;
+applyMedia = function(rank, media) {
+  baseApplyMedia(rank, media);
+  document.querySelectorAll(`[data-rank="${rank}"]`).forEach(card => {
+    const gateway = card.querySelector(".gateway");
+    if (gateway) gateway.hidden = !media?.city || isUnavailableGateway(media.city);
+  });
 };
