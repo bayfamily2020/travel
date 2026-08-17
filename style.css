@@ -14,3 +14,7 @@
 /* Stronger destination card separation */
 .place-grid{gap:15px}.place-card{border:1.5px solid #a99f8d;box-shadow:0 2px 7px rgba(23,33,27,.07)}.place-card:hover{border-color:#746b5c;box-shadow:0 12px 30px rgba(27,43,34,.14)}.place-card.done{border-color:#66806c;box-shadow:0 2px 8px rgba(31,75,59,.12)}
 @media(max-width:580px){.place-grid{gap:17px}.place-card{border-width:2px;box-shadow:0 3px 9px rgba(23,33,27,.09)}}
+
+/* Extra-strong card outlines */
+.place-card{border-width:2px;border-color:#918775}.place-card.done{border-color:#56745e}
+@media(max-width:580px){.place-card{border-width:3px}}
