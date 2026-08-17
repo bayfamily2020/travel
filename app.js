@@ -22,6 +22,16 @@ const featuredMedia = {
   8:{city:"Puerto Iguazú",file:"Iguazu Falls Panorama 2009.jpg"},
   9:{city:"Granada",file:"Alhambra - Granada.jpg"},
   10:{city:"Istanbul",file:"Hagia Sophia Mars 2013.jpg"},
+  18:{city:"Santorini",file:"1000 Three domes of Oia in Santorini Photo by Giles Laurent.jpg"},
+  27:{city:"Victoria Falls",file:"Cataratas Victoria, Zambia-Zimbabue, 2018-07-27, DD 16-20 PAN.jpg"},
+  39:{city:"Khuzhir",file:"Lake Baikal in winter.jpg"},
+  42:{city:"Havana",file:"National-Capitol-and-classic-cars-in-Havana-Cuba-225-031-061A.jpg"},
+  77:{city:"Crescent City",file:"Redwood National Park, fog in the forest.jpg"},
+  114:{city:"Ayutthaya",file:"Royal Palace of Ayutthaya.jpg"},
+  115:{city:"Vatican City",file:"CAPPELLA SISTINA Ceiling.jpg"},
+  148:{city:"Leshan",file:"Leshan Buddha Statue View.JPG"},
+  173:{city:"Elmina",file:"Elmina Castle - Elmina, Ghana.jpg"},
+  177:{city:"Estes Park",file:"Cloudy morning at bear lake (37317249226).jpg"},
   217:{city:"Beijing",file:"Summer Palace scene 1.jpg"}
 };
 
