@@ -467,7 +467,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260817-fame`).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260817-points`).then(r => r.json())));
     places = chunks.flat();
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
