@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v1";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v2";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -21,7 +21,8 @@ const featuredMedia = {
   7:{city:"Rome",file:"Colosseum Rome.jpg"},
   8:{city:"Puerto Iguazú",file:"Iguazu Falls Panorama 2009.jpg"},
   9:{city:"Granada",file:"Alhambra - Granada.jpg"},
-  10:{city:"Istanbul",file:"Hagia Sophia Mars 2013.jpg"}
+  10:{city:"Istanbul",file:"Hagia Sophia Mars 2013.jpg"},
+  217:{city:"Beijing",file:"Summer Palace scene 1.jpg"}
 };
 
 function englishPart(value) {
@@ -45,8 +46,26 @@ function saveMediaCache() {
   try { localStorage.setItem(MEDIA_CACHE_KEY, JSON.stringify(mediaCache)); } catch (_) {}
 }
 
+async function fetchCommonsImage(query) {
+  try {
+    const params = new URLSearchParams({
+      action:"query", format:"json", origin:"*", generator:"search",
+      gsrsearch:query, gsrnamespace:"6", gsrlimit:"1",
+      prop:"imageinfo", iiprop:"url", iiurlwidth:"720"
+    });
+    const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params}`);
+    if (!response.ok) return "";
+    const json = await response.json();
+    const page = Object.values(json.query?.pages || {})[0];
+    return page?.imageinfo?.[0]?.thumburl || page?.imageinfo?.[0]?.url || "";
+  } catch (_) {
+    return "";
+  }
+}
+
 async function fetchMedia(p) {
-  if (seededMedia(p)) return seededMedia(p);
+  const seeded = seededMedia(p);
+  if (seeded?.image) return seeded;
   const query = `${englishPart(p.name)} ${englishPart(p.country)}`;
   const params = new URLSearchParams({
     action:"query", format:"json", origin:"*", generator:"search",
@@ -76,6 +95,7 @@ async function fetchMedia(p) {
   } catch (error) {
     console.warn("Destination media lookup:", query, error);
   }
+  if (!image) image = await fetchCommonsImage(query);
   const result = { image, city: city || englishPart(p.country) || "Worldwide" };
   mediaCache[p.rank] = result;
   saveMediaCache();
@@ -88,9 +108,21 @@ function applyMedia(rank, media) {
     const placeholder = card.querySelector(".image-placeholder");
     const city = card.querySelector(".gateway-city");
     if (img && media.image) {
+      img.onerror = () => {
+        img.hidden = true;
+        if (placeholder) {
+          placeholder.hidden = false;
+          placeholder.textContent = "IMAGE COMING SOON";
+        }
+        delete mediaCache[rank];
+        saveMediaCache();
+      };
       img.src = media.image;
       img.hidden = false;
       if (placeholder) placeholder.hidden = true;
+    } else if (placeholder) {
+      placeholder.hidden = false;
+      placeholder.textContent = "IMAGE COMING SOON";
     }
     if (city) city.textContent = media.city;
   });
@@ -181,7 +213,12 @@ function updateSummary() {
   $("progress").textContent = `${progress}%`;
   $("progress-bar").style.width = `${progress}%`;
   const levels = [[5,"井底观察员"],[15,"点水的蜻蜓"],[20,"驿站菜鸟"],[30,"迁徙的羚羊"],[40,"漂流的海龟"],[50,"追风的北极燕鸥"],[60,"洄游的灰鲸"],[70,"环球达人"],[85,"伊本·白图泰"]];
-  $("level").textContent = progress >= 85 ? "外星人探针" : levels.find(([limit]) => progress < limit)[1];
+  const level = progress >= 85 ? "外星人探针" : levels.find(([limit]) => progress < limit)[1];
+  $("level").textContent = level;
+  if ($("final-score")) $("final-score").textContent = score;
+  if ($("final-max-score")) $("final-max-score").textContent = `/ ${max} 得分`;
+  if ($("final-progress")) $("final-progress").textContent = `${progress}%`;
+  if ($("final-level")) $("final-level").textContent = level;
 }
 
 function render() {
