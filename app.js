@@ -65,6 +65,25 @@ const featuredMedia = {
   446:{city:"Debar",file:"Bigorski Monastery, N. Macedonia.jpg"},
   452:{city:"Kyiv",file:"Kyiv Pechersk Lavra - detailed panoramic view.jpg"},
   217:{city:"Beijing",file:"Summer Palace scene 1.jpg"}
+  397:{city:"Taipei",file:"National Palace Museum Front View.jpg"},
+  490:{city:"Oban",file:"Fingals cave Staffa Iona Scotland deepInside.jpg"},
+  491:{city:"Pisa",file:"Leaning Tower Pisa - Front view.jpg"},
+  492:{city:"Trebujeni",file:"Biserica „Nașterea Domnului” 4.jpg"},
+  493:{city:"Monaco",file:"Oceanographic Museum.jpg"},
+  494:{city:"Oslo",file:"Oslo Opera house exterior in 2010.jpg"},
+  495:{city:"Lüderitz",file:"Kolmanskop Ghost Town.jpg"},
+  504:{city:"New Orleans",file:"Mardi Gras Parade, New Orleans, Louisiana (LOC).jpg"},
+  508:{city:"Mathura",file:"Life in colour - Thousands celebrate Holi in Mathura.jpg"},
+  516:{city:"Hong Kong",file:"Dragon boat racing.jpg"},
+  518:{city:"Kyoto",file:"Yamaboko Gion.jpg"},
+  524:{city:"Chiang Mai",file:"Yi peng sky lantern festival San Sai Thailand.jpg"},
+  533:{city:"Buñol",file:"LaTomatina2010.jpg"},
+  544:{city:"Cologne",file:"Kölner Rosenmontagszug-8944.jpg"},
+  556:{city:"Ouidah",file:"Voodoo king and his entourage leaving the Jan 10 festival on foot, Ouidah, Benin.jpg"},
+  566:{city:"Tanabe",file:"Kumano Kodo Pilgrimage Trail, Koguchi to Nachisan, Japan (48912307128).jpg"},
+  568:{city:"Petra",file:"38 Petra Monastery Trail - The Trail Following the Monastery - panoramio.jpg"},
+  570:{city:"Antalya",file:"On the Trail (7023429945).jpg"},
+  581:{city:"Cusco",file:"Trekking Ausangate Circuit - Kampeerplaats Japata.jpg"},
 };
 
 function englishPart(value) {
