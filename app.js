@@ -18,8 +18,8 @@ function updateSummary() {
   $("max-score").textContent = `/ ${max} 得分`;
   $("progress").textContent = `${progress}%`;
   $("progress-bar").style.width = `${progress}%`;
-  const levels = [[5,"井底观察员"],[15,"驿站菜鸟"],[30,"周末浪客"],[50,"天涯浪子"],[70,"环球达人"],[100,"断腿旅行侠"]];
-  $("level").textContent = score === max && max > 0 ? "外星人探针" : levels.find(([limit]) => progress < limit)[1];
+  const levels = [[5,"井底观察员"],[15,"驿站菜鸟"],[30,"周末浪客"],[50,"天涯浪子"],[70,"环球达人"],[90,"断腿旅行侠"]];
+  $("level").textContent = progress >= 90 ? "外星人探针" : levels.find(([limit]) => progress < limit)[1];
 }
 
 function render() {
