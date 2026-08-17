@@ -85,7 +85,6 @@ const featuredMedia = {
   585:{city:"El Chaltén",file:"Laguna de Los Tres Panorama.jpg"},
   588:{city:"Silverton",file:"Continental divide trail in Weminuche Wilderness.jpg"},
   593:{city:"Skagway",file:"Klondikers with supplies ascending Chilkoot Pass, circa 1898 (AL+CA 362).jpg"},
-  597:{city:"Calenzana",file:"GR 20 Cirque de la solitude.JPG"},
   610:{city:"National Park",file:"Tongariro Alpine Crossing.jpg"},
   615:{city:"Kokoda",file:"Kokoda Track WV banner.JPG"},
   622:{city:"Mývatn",file:"Iceland lake Northern Lights (Unsplash).jpg"},
@@ -98,6 +97,9 @@ const featuredMedia = {
   650:{city:"King Salmon",file:"Grizzly Bear Fishing Brooks Falls.jpg"},
   643:{city:"El Calafate",file:"Argentinian gaucho riding horse.jpg"},
   644:{city:"Mendoza",file:"Vineyard in Mendoza, Argentina.jpg"},
+  597:{city:"Calenzana",file:"Refuge d'E Capannelle en 2021.jpg"},
+  601:{city:"Porto Covo",file:"Fisherman's Trail, Portugal in November (51803249902).jpg"},
+  602:{city:"Theth",file:"The Accursed Mountains 05.jpg"},
 };
 
 function englishPart(value) {
