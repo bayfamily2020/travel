@@ -69,7 +69,6 @@ const featuredMedia = {
   495:{city:"Lüderitz",file:"Kolmanskop Ghost Town.jpg"},
   504:{city:"New Orleans",file:"Mardi Gras Parade, New Orleans, Louisiana (LOC).jpg"},
   508:{city:"Mathura",file:"Life in colour - Thousands celebrate Holi in Mathura.jpg"},
-  516:{city:"Hong Kong",file:"Dragon boat racing.jpg"},
   518:{city:"Kyoto",file:"Yamaboko Gion.jpg"},
   524:{city:"Chiang Mai",file:"Yi peng sky lantern festival San Sai Thailand.jpg"},
   533:{city:"Buñol",file:"LaTomatina2010.jpg"},
@@ -108,6 +107,10 @@ const featuredMedia = {
   560:{city:"Albuquerque",file:"Mass Ascension 2012.jpg"},
   569:{city:"Fethiye",file:"The Lycian Way - 2014.10 - panoramio.jpg"},
   643:{city:"El Calafate",file:"A patagonian herder focused on the task.jpg"},
+  331:{city:"Zhangjiajie",file:"1 tianzishan wulingyuan zhangjiajie 2012.jpg"},
+  514:{city:"Huangshan",file:"Huangshan pic 4.jpg"},
+  515:{city:"Guilin",file:"Guilin Li River.jpg"},
+  516:{city:"Fengjie",file:"Qutang Gorge on Changjiang.jpg"},
 };
 
 function englishPart(value) {
@@ -241,7 +244,11 @@ function descriptionFor(p) {
     8:"横跨阿根廷与巴西的庞大瀑布群，站在“魔鬼咽喉”前可感受雷鸣般水势。",
     9:"摩尔王朝留下的宫殿城堡，繁复雕刻、静谧庭院与流水展现伊斯兰美学。",
     10:"跨越拜占庭与奥斯曼时代的建筑奇迹，巨型穹顶、马赛克和宣礼塔同框。",
-    210:"罗本岛曾长期作为政治犯监狱，纳尔逊·曼德拉在此被囚禁18年，如今是记录南非反种族隔离历史的世界遗产。"
+    210:"罗本岛曾长期作为政治犯监狱，纳尔逊·曼德拉在此被囚禁18年，如今是记录南非反种族隔离历史的世界遗产。",
+    331:"张家界以数千座石英砂岩峰柱构成罕见峰林地貌，云雾升起时如同漂浮于天地之间。",
+    514:"黄山以奇松、怪石、云海、温泉与冬雪闻名，花岗岩峰林塑造了中国山水画般的意境。",
+    515:"桂林山水以漓江和喀斯特峰林为核心，乘船从桂林至阳朔可欣赏最经典的山水长卷。",
+    516:"夔门是长江三峡西端的雄关，也是瞿塘峡入口，两岸绝壁夹江，素有“天下雄”之称。"
   };
   if (featured[p.rank]) return featured[p.rank];
 
