@@ -1,4 +1,58 @@
 // Travel rank labels override.
+
+const travelDiagnoses = {
+  "工位钉子户":"世界很大，但你的活动半径主要取决于午休有多久。",
+  "家养牛马":"具备远行能力，目前仍处于稳定圈养状态。",
+  "井底观察员":"面对四壁，我在暗中观察。",
+  "探头土拨鼠":"已出现明显出门欲望，建议老板提高警惕。",
+  "年假特种兵":"擅长把5天年假使用出15天的效果。",
+  "出逃的羊驼":"圈养失败，已开始周期性离家出走。",
+  "奔跑的走地鸡":"飞得还不算远，但已经明显不愿意在家待着。",
+  "护照比脸沧桑":"护照老化速度已经超过本人。",
+  "人形登机牌":"机场广播对你的熟悉程度正在超过邻居。",
+  "祖国偶尔拥有我":"户籍所在地明确，实际出没地点比较随机。",
+  "跨国流窜犯":"活动范围已突破国界，朋友圈定位具有较强迷惑性。",
+  "漂流的海龟":"有明确的家，但主要用途是回来换行李。",
+  "地球街溜子":"已把地球逛出了小区遛弯的感觉。",
+  "人形行李箱":"人与行李已形成长期稳定的共生关系。",
+  "环球达人":"普通旅游建议已基本失效，请自行打开世界地图找漏网之鱼。",
+  "伊本·白图泰":"现代交通工具显著放大了你的活动范围。古人看了会沉默。",
+  "洄游的灰鲸":"全球大范围迁徙已成习性，回家属于季节性行为。",
+  "外星人卧底":"是外星人派来侦查地球的，鉴定完毕。"
+};
+
+function travelDiagnosis(level){
+  return travelDiagnoses[level] || "以上诊断仅供娱乐，如有不服，建议继续买机票。";
+}
+
+// Add the diagnosis to the share card without disturbing the existing card layout.
+const baseDrawShareCard = drawShareCard;
+drawShareCard = async function(score,max,progress,level){
+  await baseDrawShareCard(score,max,progress,level);
+  const canvas=$("share-card");
+  if(!canvas)return;
+  const ctx=canvas.getContext("2d");
+  const text=travelDiagnosis(level);
+  const centerX=540;
+  const maxWidth=330;
+  ctx.textAlign="center";
+  ctx.fillStyle="#ff9a69";
+  ctx.font='700 20px "Microsoft YaHei",sans-serif';
+  ctx.fillText("旅行诊断",centerX,512);
+  ctx.fillStyle="#d7e1d9";
+  ctx.font='20px "Microsoft YaHei",sans-serif';
+  const chars=Array.from(text);
+  const lines=[];
+  let line="";
+  chars.forEach(ch=>{
+    const test=line+ch;
+    if(ctx.measureText(test).width>maxWidth && line){lines.push(line);line=ch;}else{line=test;}
+  });
+  if(line)lines.push(line);
+  lines.slice(0,3).forEach((l,i)=>ctx.fillText(l,centerX,548+i*30));
+  ctx.textAlign="left";
+};
+
 updateSummary = function() {
   const score = places.reduce((sum, p) => sum + (visited.has(p.rank) ? p.points : 0), 0);
   const max = places.reduce((sum, p) => sum + p.points, 0);
@@ -17,7 +71,7 @@ updateSummary = function() {
     [10, "年假特种兵"],
     [12, "出逃的羊驼"],
     [14, "奔跑的走地鸡"],
-    [16, "护照磨损员"],
+    [16, "护照比脸沧桑"],
     [18, "人形登机牌"],
     [20, "祖国偶尔拥有我"],
     [30, "跨国流窜犯"],
