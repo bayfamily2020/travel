@@ -37,6 +37,7 @@ const featuredMedia = {
   190:{city:"Amsterdam",file:"Van Gogh - Starry Night - Google Art Project.jpg"},
   208:{city:"New York City",file:"Times Square Panorama At Night (200279283).jpeg"},
   209:{city:"El Nido",file:"Island lagoon in Bacuit Bay, El Nido, Palawan, Philippines.jpg"},
+  238:{city:"Luxor",file:"Luxor, Luxor Temple, front view at night, Egypt, Oct 2004.jpg"},
   239:{city:"London",file:"Museo de Historia Natural, Londres, Inglaterra, 2022-11-25, DD 50-52 HDR.jpg"},
   275:{city:"Yakushima",file:"Yaku-Island Shiratani-Unsui-Gorge.jpg"},
   278:{city:"Furnace Creek",file:"Zabriskie Point Death Valley National park.jpeg"},
