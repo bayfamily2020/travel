@@ -14,6 +14,9 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  505:{city:"Port of Spain",file:"Trinidad Carnival-5492.jpg"},
+  471:{city:"Panama City",file:"Exclusa Miraflores Canal de Panama Panorama.jpg"},
+  327:{city:"Ghanzi",file:"Kudu of kalahari.jpg"},
   475:{city:"Las Vegas",file:"Las Vegas Strip at night, 2012.jpg"},
   466:{city:"West Glacier",file:"Stanton Mountain reflected in Lake McDonald.jpg"},
   1:{city:"Siem Reap",file:"Angkor Vat (6931599619).jpg"},
