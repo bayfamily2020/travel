@@ -35,7 +35,7 @@ const featuredMedia = {
   190:{city:"Amsterdam",file:"Van Gogh - Starry Night - Google Art Project.jpg"},
   208:{city:"New York City",file:"Times Square Panorama At Night (200279283).jpeg"},
   209:{city:"El Nido",file:"Island lagoon in Bacuit Bay, El Nido, Palawan, Philippines.jpg"},
-  210:{city:"Cape Town",file:"Nelson Mandela's prison cell, Robben Island, South Africa.jpg"},
+  210:{city:"Cape Town",file:"Nelson Mandela's cell at Robben Island Maximum Security Prison.jpg"},
   239:{city:"London",file:"Museo de Historia Natural, Londres, Inglaterra, 2022-11-25, DD 50-52 HDR.jpg"},
   275:{city:"Yakushima",file:"Yaku-Island Shiratani-Unsui-Gorge.jpg"},
   278:{city:"Furnace Creek",file:"Zabriskie Point Death Valley National park.jpeg"},
@@ -49,6 +49,21 @@ const featuredMedia = {
   623:{city:"Inari",file:"Reindeer farm, Inari, Suomi - Finland 2013-03-10 g.jpg"},
   627:{city:"Göreme",file:"Cappadocia balloons.jpg"},
   630:{city:"Kyoto",file:"Outdoor Tea Ceremony.jpg"},
+  55:{city:"Paris",file:"NotreDameDeParis.jpg"},
+  64:{city:"Portree",file:"Old Man of Storr, Isle of Skye, Scotland - Diliff.jpg"},
+  84:{city:"Keystone",file:"Mount Rushmore National Memorial MORU2014.jpg"},
+  117:{city:"Hong Kong",file:"View of Hong Kong from Victoria Peak.jpg"},
+  125:{city:"Oban",file:"Stewart Island as seen from i plane.jpg"},
+  195:{city:"Paju",file:"Joint Security Area (3069693747).jpg"},
+  221:{city:"Berlin",file:"Ruins of the Reichstag in Berlin, 3 June 1945. BU8573.jpg"},
+  295:{city:"Ein Bokek",file:"Dead Sea floating (Unsplash).jpg"},
+  323:{city:"Eastham",file:"Nauset light, cape cod national seashore (20013830206).jpg"},
+  324:{city:"Ometepe",file:"Ometepe Island with Concepcion Volcano - From Lake Nicaragua - Nicaragua - 02 (31712521586).jpg"},
+  351:{city:"Grundarfjörður",file:"Kirkjufell Panorama - Flickr - Simaron.jpg"},
+  364:{city:"Asheville",file:"Linn Cove Viaduct in the Autumn.jpg"},
+  368:{city:"Belize City",file:"Glovers Reef atoll belize 20221222 140052.jpg"},
+  446:{city:"Debar",file:"Bigorski Monastery, N. Macedonia.jpg"},
+  452:{city:"Kyiv",file:"Kyiv Pechersk Lavra - detailed panoramic view.jpg"},
   217:{city:"Beijing",file:"Summer Palace scene 1.jpg"}
 };
 
@@ -182,7 +197,8 @@ function descriptionFor(p) {
     7:"古罗马最具代表性的竞技场，拱券结构与地下通道仍诉说帝国时代盛况。",
     8:"横跨阿根廷与巴西的庞大瀑布群，站在“魔鬼咽喉”前可感受雷鸣般水势。",
     9:"摩尔王朝留下的宫殿城堡，繁复雕刻、静谧庭院与流水展现伊斯兰美学。",
-    10:"跨越拜占庭与奥斯曼时代的建筑奇迹，巨型穹顶、马赛克和宣礼塔同框。"
+    10:"跨越拜占庭与奥斯曼时代的建筑奇迹，巨型穹顶、马赛克和宣礼塔同框。",
+    210:"罗本岛曾长期作为政治犯监狱，纳尔逊·曼德拉在此被囚禁18年，如今是记录南非反种族隔离历史的世界遗产。"
   };
   if (featured[p.rank]) return featured[p.rank];
 
