@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v2";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v3";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
