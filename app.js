@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v13";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v14";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  565:{city:"Beijing",file:"Jiankou Great Wall.jpg"},
   591:{city:"Springdale",file:"Zion Angels landing Panorama.jpg"},
   147:{city:"Lenakel",file:"Mount Yasur eruption 2006, Tanna Island, Vanuatu, VAN 0516.jpg"},
   567:{city:"Probolinggo",file:"Indonesia - Bromo (37395212635).jpg"},
@@ -467,7 +468,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260817-points2`).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260817-565`).then(r => r.json())));
     places = chunks.flat();
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
