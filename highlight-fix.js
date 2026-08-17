@@ -3,32 +3,21 @@
 (function(){
   const originalHighlights = (typeof destinationHighlights !== "undefined") ? destinationHighlights : {};
 
-  const exact = {
-    4:"世界最长的古代防御工程",
-    22:"《权力的游戏》“君临城”主要取景地",
-    23:"世界最大的盐沼，雨季化身“天空之镜”",
-    39:"世界最深、蓄水量最大的淡水湖",
-    148:"世界最大的古代石刻弥勒佛",
-    278:"北美最低、最热、最干燥的荒漠盆地",
-    295:"地球陆地最低点",
-    312:"曾经的世界最高双子塔",
-    491:"世界最著名的倾斜钟楼",
-    495:"被纳米布沙漠吞没的钻石鬼城",
-    645:"美国公路文化最传奇的“母亲之路”"
-  };
-
-  function cleanName(p){
-    return String(p.name || "")
-      .replace(/^\d+[.、]\s*/, "")
-      .replace(/\s*\([^)]*\)\s*$/, "")
-      .trim();
+  function fixFilterLabels(){
+    const labels = {group:"类型：全部", continent:"洲别：全部", fame:"知名度：全部", status:"状态：全部"};
+    Object.entries(labels).forEach(([id,label]) => {
+      const select = document.getElementById(id);
+      if (select?.options?.length) select.options[0].textContent = label;
+    });
   }
 
-  function derivedHighlight(p){
-    const n = `${p.name || ""}`.toLowerCase();
-    const type = `${p.type || ""}`;
-    const group = `${p.group || ""}`;
+  const exact = {
+    4:"世界最长的古代防御工程",22:"《权力的游戏》“君临城”主要取景地",23:"世界最大的盐沼，雨季化身“天空之镜”",39:"世界最深、蓄水量最大的淡水湖",148:"世界最大的古代石刻弥勒佛",278:"北美最低、最热、最干燥的荒漠盆地",295:"地球陆地最低点",312:"曾经的世界最高双子塔",491:"世界最著名的倾斜钟楼",495:"被纳米布沙漠吞没的钻石鬼城",645:"美国公路文化最传奇的“母亲之路”"
+  };
 
+  function cleanName(p){ return String(p.name || "").replace(/^\d+[.、]\s*/, "").replace(/\s*\([^)]*\)\s*$/, "").trim(); }
+  function derivedHighlight(p){
+    const n = `${p.name || ""}`.toLowerCase(), type = `${p.type || ""}`, group = `${p.group || ""}`;
     if (/blue hole|蓝洞/.test(n)) return "深蓝色海底竖井，潜水时像直通地心";
     if (/waterfall|falls|瀑布/.test(n)) return "巨量水流从断崖倾泻，是最直接的自然力量现场";
     if (/glacier|冰川/.test(n)) return "蓝色冰体与裂隙近距离展开，能直观看见冰河运动";
@@ -63,7 +52,6 @@
     if (/safari|迁徙|migration|wildlife/.test(n)) return "动物密度、迁徙或捕食现场才是这里真正的主角";
     if (/aurora|northern lights|极光/.test(n)) return "最大卖点就是低光污染天空下的极光爆发";
     if (/balloon|热气球/.test(n)) return "日出时从空中俯瞰地貌，尺度感远胜地面观看";
-
     if (type.includes("历史遗产")) return "真正值得看的，是遗址上仍能读出的时代结构与生活痕迹";
     if (type.includes("宗教建筑")) return "建筑、仪式与艺术细节三者叠加，才是这里的核心价值";
     if (type.includes("城市街区")) return "最适合步行体验，用街巷尺度而不是单点打卡认识它";
@@ -80,4 +68,8 @@
     if (curated && !/当地最|最具辨识度|代表性的|值得.*之一|旅行地标之一/.test(curated)) return curated;
     return derivedHighlight(p);
   };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fixFilterLabels);
+  else fixFilterLabels();
+  setTimeout(fixFilterLabels, 0);
 })();
