@@ -18,7 +18,7 @@ function updateSummary() {
   $("max-score").textContent = `/ ${max} 得分`;
   $("progress").textContent = `${progress}%`;
   $("progress-bar").style.width = `${progress}%`;
-  const levels = [[5,"井底观察员"],[15,"点水的蜻蜓"],[30,"奔跑的走地鸡"],[50,"漂泊的信天翁"],[70,"环球达人"],[90,"断腿旅行侠"]];
+  const levels = [[5,"井底观察员"],[15,"驿站菜鸟"],[30,"奔跑的走地鸡"],[50,"漂流的海龟"],[70,"环球达人"],[90,"断腿旅行侠"]];
   $("level").textContent = progress >= 90 ? "外星人探针" : levels.find(([limit]) => progress < limit)[1];
 }
 
