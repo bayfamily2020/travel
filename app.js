@@ -7,6 +7,28 @@ function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>\"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"})[c]);
 }
 
+const featuredMedia = {
+  1:{city:"Siem Reap",file:"Angkor Vat (6931599619).jpg"},
+  2:{city:"Cairns",file:"Amazing Great Barrier Reef 1.jpg"},
+  3:{city:"Cusco",file:"Peru Machu Picchu Sunrise.jpg"},
+  4:{city:"Beijing",file:"Great wall panorama.jpg"},
+  5:{city:"Agra",file:"Taj Mahal Front.JPG"},
+  6:{city:"Flagstaff",file:"Grand Canyon view from Pima Point 2010.jpg"},
+  7:{city:"Rome",file:"Colosseum Rome.jpg"},
+  8:{city:"Puerto Iguazú",file:"Iguazu Falls Panorama 2009.jpg"},
+  9:{city:"Granada",file:"Alhambra - Granada.jpg"},
+  10:{city:"Istanbul",file:"Hagia Sophia Mars 2013.jpg"}
+};
+
+function mediaFor(p) {
+  const media = featuredMedia[p.rank];
+  if (!media) return null;
+  return {
+    city: media.city,
+    image: `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(media.file)}?width=720`
+  };
+}
+
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify([...visited])); }
 
 function descriptionFor(p) {
@@ -94,7 +116,8 @@ function render() {
   $("empty").hidden = filtered.length !== 0;
   $("grid").innerHTML = filtered.map(p => {
     const done = visited.has(p.rank);
-    return `<button class="place-card ${done ? "done" : ""}" data-rank="${p.rank}" aria-pressed="${done}"><span class="rank">#${String(p.rank).padStart(3,"0")}</span><span class="points p${p.points}">${p.points} 分</span><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><span class="place-name">${escapeHtml(p.name)}</span><span class="meta"><b>${escapeHtml(p.continent)}</b> · ${escapeHtml(p.country)}</span><span class="description">${escapeHtml(descriptionFor(p))}</span><span class="type">${escapeHtml(p.group)} · ${escapeHtml(p.type)}</span>${p.evidence ? '<span class="evidence">已有旅行记录</span>' : ""}</button>`;
+    const media = mediaFor(p);
+    return `<button class="place-card ${done ? "done" : ""} ${media ? "with-image" : ""}" data-rank="${p.rank}" aria-pressed="${done}">${media ? `<span class="image-wrap"><img class="place-image" src="${escapeHtml(media.image)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async"><span class="image-credit">Wikimedia Commons</span></span>` : ""}<span class="rank">#${String(p.rank).padStart(3,"0")}</span><span class="points p${p.points}">${p.points} 分</span><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><span class="place-name">${escapeHtml(p.name)}</span><span class="meta"><b>${escapeHtml(p.continent)}</b> · ${escapeHtml(p.country)}</span>${media ? `<span class="gateway"><b>Gateway city</b> · ${escapeHtml(media.city)}</span>` : ""}<span class="description">${escapeHtml(descriptionFor(p))}</span><span class="type">${escapeHtml(p.group)} · ${escapeHtml(p.type)}</span>${p.evidence ? '<span class="evidence">已有旅行记录</span>' : ""}</button>`;
   }).join("");
   updateSummary();
 }
