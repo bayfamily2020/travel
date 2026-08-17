@@ -2,3 +2,5 @@
 .level-card strong{font-family:"Noto Serif SC",Georgia,serif;font-size:clamp(22px,2.5vw,34px);color:#ef8458;white-space:nowrap}
 @media(max-width:900px){.score-board{grid-template-columns:repeat(2,1fr)}.level-card{display:block!important}}
 @media(max-width:580px){.level-card strong{font-size:20px}.hero h1{font-size:50px}}
+
+.feedback{max-width:1184px;margin:0 auto 72px;padding:42px;border:1px solid var(--line);background:var(--cream)}.feedback h2{font:500 clamp(30px,4vw,48px)/1.1 Georgia,"Noto Serif SC",serif;margin:10px 0 14px}.feedback p{max-width:760px;color:#657469;line-height:1.8}.feedback-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.feedback-actions a{display:inline-block;padding:13px 20px;border:1px solid var(--forest);color:var(--forest);text-decoration:none;font-weight:700}.feedback-actions .feedback-primary{background:var(--forest);color:#fff}@media(max-width:900px){.feedback{margin:0 28px 60px}}@media(max-width:580px){.feedback{margin:0 18px 48px;padding:28px 20px}.feedback-actions a{width:100%;text-align:center}}
