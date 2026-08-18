@@ -140,6 +140,17 @@ const destinationHighlights = {
   650:"世界最著名的棕熊捕鱼观景地之一"
 };
 
+
+function wikiHref(p){
+  const full = String(p.name || "").replace(/^\s*[•·]\s*/, "").replace(/^\d+[.、]\s*/, "").trim();
+  const chinese = full.split(/[（(]/)[0].trim();
+  const englishMatch = full.match(/[（(]([^）)]+)[）)]/);
+  const hasChinese = /[\u3400-\u9fff]/.test(chinese);
+  const query = hasChinese ? chinese : (englishMatch?.[1] || full);
+  const host = hasChinese ? "zh.wikipedia.org" : "en.wikipedia.org";
+  return `https://${host}/wiki/Special:Search?search=${encodeURIComponent(query)}`;
+}
+
 function shortPlaceName(p) {
   return String(p.name || "").replace(/\s*\([^)]*\)\s*$/, "").replace(/^\d+[.、]\s*/, "").trim();
 }
@@ -277,7 +288,7 @@ render = function() {
     const media = seededMedia(p);
     const image = media?.image || "";
     const city = media?.city || "Locating…";
-    return `<button class="place-card ${done ? "done" : ""} with-image" data-rank="${p.rank}" aria-pressed="${done}"><span class="image-wrap"><img class="place-image" ${image ? `src="${escapeHtml(image)}"` : "hidden"} alt="${escapeHtml(p.name)}" loading="lazy" decoding="async"><span class="image-placeholder" ${image ? "hidden" : ""}>EXPLORE</span><span class="image-credit">Wikimedia Commons</span></span><span class="rank">#${String(p.rank).padStart(3,"0")}</span><span class="points p${p.points}">${p.points} 分</span><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><span class="place-name">${p.rank === 1 ? `<a class="place-wiki-link" href="https://zh.wikipedia.org/wiki/%E5%90%B4%E5%93%A5%E7%AA%9F" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()">${escapeHtml(p.name)} <span aria-hidden="true">↗</span></a>` : escapeHtml(p.name)}</span><span class="meta"><b>${escapeHtml(p.continent)}</b> · ${escapeHtml(p.country)}</span><span class="gateway"><b>Gateway city</b> · <span class="gateway-city">${escapeHtml(city)}</span></span><span class="description">${escapeHtml(descriptionFor(p))}</span><span class="best-months"><b>最佳月份</b> · ${escapeHtml(bestMonthsLabel(p))}</span><span class="type">${escapeHtml(p.group)} · ${escapeHtml(p.type)}</span>${p.evidence ? '<span class="evidence">已有旅行记录</span>' : ""}</button>`;
+    return `<button class="place-card ${done ? "done" : ""} with-image" data-rank="${p.rank}" aria-pressed="${done}"><span class="image-wrap"><img class="place-image" ${image ? `src="${escapeHtml(image)}"` : "hidden"} alt="${escapeHtml(p.name)}" loading="lazy" decoding="async"><span class="image-placeholder" ${image ? "hidden" : ""}>EXPLORE</span><span class="image-credit">Wikimedia Commons</span></span><span class="rank">#${String(p.rank).padStart(3,"0")}</span><span class="points p${p.points}">${p.points} 分</span><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><span class="place-name">`<a class="place-wiki-link" href="${escapeHtml(wikiHref(p))}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()">${escapeHtml(p.name)} <span aria-hidden="true">↗</span></a>`</span><span class="meta"><b>${escapeHtml(p.continent)}</b> · ${escapeHtml(p.country)}</span><span class="gateway"><b>Gateway city</b> · <span class="gateway-city">${escapeHtml(city)}</span></span><span class="description">${escapeHtml(descriptionFor(p))}</span><span class="best-months"><b>最佳月份</b> · ${escapeHtml(bestMonthsLabel(p))}</span><span class="type">${escapeHtml(p.group)} · ${escapeHtml(p.type)}</span>${p.evidence ? '<span class="evidence">已有旅行记录</span>' : ""}</button>`;
   }).join("");
   hydrateVisibleMedia();
   updateSummary();
