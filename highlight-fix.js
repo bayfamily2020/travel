@@ -621,7 +621,7 @@
     if (/monastery|修道院/.test(n)) return "宗教建筑嵌入山谷或岩壁，孤立感就是最大特色";
     if (/museum|博物馆/.test(n)) return "真正值得看的是馆藏本身，而不是只为建筑打卡";
     if (/old town|old city|古城|老城|medina/.test(n)) return "最适合步行钻进街巷，用建筑、市场与日常生活认识城市";
-    if (/square|广场/.test(n)) return "城市最重要的公共舞台，建筑与人群活动都集中在这里";
+    if (/square|广场/.test(n)) return `${cleanName(p)}需要补充周围代表建筑、历史事件与具体公共活动`;
     if (/bridge|桥/.test(n)) return "桥体本身与两侧城市天际线共同构成经典视角";
     if (/tower|塔/.test(n)) return `${cleanName(p)}需要补充具体高度、结构、用途或历史故事`;
     if (/market|bazaar|市场|市集/.test(n)) return "真正的看点是摊贩、气味、叫卖与本地人的日常交易";
