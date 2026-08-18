@@ -484,7 +484,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-name-171`, {cache:"no-store"}).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-name-499`, {cache:"no-store"}).then(r => r.json())));
     places = chunks.flat();
     const forcedOnePointRanks = new Set([517,520,586,603,607]);
     places.forEach(p => { if (forcedOnePointRanks.has(p.rank)) { p.points = 1; p.fame = "不去也行"; } });
