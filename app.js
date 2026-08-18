@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v17";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v18";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,8 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  610:{city:"La Paz",file:"Death Road2.jpg"},
+  611:{city:"León",file:"Volcano Boarding Cerro Negro.jpg"},
   600:{city:"Neiafu",file:"Humpback Whales - Flickr - Christopher.Michel.jpg"},
   584:{city:"Port St Johns",file:"Underwater view of the sardine run as a dolphin hunts within dense schools of sardines.jpg"},
   116:{city:"Hanga Roa",image:"./assets/rank-116-easter-island.jpg?v=20260818"},
@@ -113,7 +115,6 @@ const featuredMedia = {
   585:{city:"El Chaltén",file:"Laguna de Los Tres Panorama.jpg"},
   588:{city:"Kula",file:"Dawn on Haleakala Volcano, Hawaii.jpg"},
   593:{city:"Lihue",file:"Na Pali Coast Kauai Hawaii (32406276598).jpg"},
-  610:{city:"National Park",file:"Tongariro Alpine Crossing.jpg"},
   615:{city:"Kokoda",file:"Kokoda Track WV banner.JPG"},
   622:{city:"Mývatn",file:"Iceland lake Northern Lights (Unsplash).jpg"},
   623:{city:"Inari",file:"Reindeer Ukonjärvi-Inarijärvi, Finland 07.jpg"},
@@ -470,7 +471,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-600`).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-610-611`).then(r => r.json())));
     places = chunks.flat();
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
