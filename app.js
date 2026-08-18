@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v29";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v30";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -138,7 +138,7 @@ const featuredMedia = {
   650:{city:"King Salmon",file:"Grizzly Bear Fishing Brooks Falls.jpg"},
   644:{city:"Mendoza",file:"Vineyard in Mendoza, Argentina.jpg"},
   597:{city:"Calenzana",file:"Refuge d'E Capannelle en 2021.jpg"},
-  601:{city:"Porto Covo",file:"Fisherman's Trail, Portugal in November (51803249902).jpg"},
+  601:{city:"Tiwanaku",file:"Puma Punku2.jpg"},
   602:{city:"Theth",file:"The Accursed Mountains 05.jpg"},
   210:{city:"Cape Town",file:"Robben Island Maximum Security Prison administration building.jpg"},
   240:{city:"Delhi",file:"View of Chandni Chowk, Old Delhi, India - September 2014.jpg"},
@@ -485,7 +485,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-rank-525`, {cache:"no-store"}).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-rank-601`, {cache:"no-store"}).then(r => r.json())));
     places = chunks.flat();
     const forcedOnePointRanks = new Set([517,520,586,603,607]);
     places.forEach(p => { if (forcedOnePointRanks.has(p.rank)) { p.points = 1; p.fame = "不去也行"; } });
