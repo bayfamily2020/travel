@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v27";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v28";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  282:{city:"Volgograd",file:"The Motherland Calls.jpg"},
   520:{city:"Paro",image:"./assets/rank-520-bhutan-mask-dance.svg?v=20260818"},
   603:{city:"Banyuwangi",file:"Blue fire of Ijen, Kawah Ijen, Java, Indonesia, 20220821 0432 9581.jpg"},
   614:{city:"Antigua",file:"Fuego eruption by night - 54974845875.jpg"},
@@ -287,6 +288,7 @@ function descriptionFor(p) {
     10:"跨越拜占庭与奥斯曼时代的建筑奇迹，巨型穹顶、马赛克和宣礼塔同框。",
     19:"1835年达尔文随“小猎犬号”考察这里，岛间巨龟与雀鸟的差异启发了他对物种演化和自然选择的思考。",
     59:"由旧火车站改建而成，馆藏以1848至1914年的法国艺术为核心，莫奈、梵高、德加等印象派与后印象派名作尤其集中。",
+    282:"这里是斯大林格勒战役最激烈的制高点之一，山顶“祖国母亲在召唤”巨像与烈士纪念群铭记二战东线的惨烈转折。",
     97:"珍珠港保存着亚利桑那号战列舰残骸与纪念馆，记录1941年袭击事件及美国卷入第二次世界大战的历史转折。",
     120:"约52公里的高海拔圣山环线，通常用三天翻越卓玛拉垭口；冈仁波齐同时受到佛教、印度教、耆那教与苯教敬奉。",
     144:"自由女神像与埃利斯岛共同讲述美国移民史：前者象征自由，后者曾迎接逾千万名新移民。",
