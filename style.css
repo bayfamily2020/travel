@@ -33,3 +33,13 @@
   .type{margin-top:2px;padding-top:2px;font-size:10px;line-height:1.15}
   .evidence{right:12px;bottom:7px;font-size:9px}
 }
+
+
+.community-board{max-width:1184px;margin:0 auto 72px;padding:48px 40px;background:var(--cream);border:2px solid #9f9685}
+.community-head{max-width:760px;margin-bottom:34px}
+.community-head h2{font:500 clamp(34px,5vw,56px)/1.1 Georgia,"Noto Serif SC",serif;margin:10px 0 16px}
+.community-head p{margin:0 0 14px;color:#657469;font-size:15px;line-height:1.8}
+.community-head a{color:#9a4a2e;font-size:13px;text-underline-offset:4px}
+.community-board .giscus{min-height:220px}
+@media(max-width:900px){.community-board{margin-left:28px;margin-right:28px}}
+@media(max-width:580px){.community-board{margin:0 18px 50px;padding:30px 18px}.community-head{margin-bottom:24px}.community-head p{font-size:14px}}
