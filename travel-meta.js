@@ -142,6 +142,10 @@ const destinationHighlights = {
 
 
 function wikiHref(p){
+  const wikiOverrides = {
+    11:"https://zh.wikipedia.org/wiki/%E9%BA%A6%E5%9C%B0%E9%82%A3"
+  };
+  if (wikiOverrides[p.rank]) return wikiOverrides[p.rank];
   const full = String(p.name || "").replace(/^\s*[•·]\s*/, "").replace(/^\d+[.、]\s*/, "").trim();
   const chinese = full.split(/[（(]/)[0].trim();
   const englishMatch = full.match(/[（(]([^）)]+)[）)]/);
