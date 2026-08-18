@@ -161,6 +161,7 @@ function descriptionFor(p) {
 }
 
 const bestMonthOverrides = {
+  528:[4,5,6,7,8,9,10],
   520:[3,4],
   589:[5,6,7,8,9,10],
   630:[2],
