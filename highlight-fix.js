@@ -616,7 +616,7 @@
     if (/palace|宫/.test(n)) return "建筑、庭院与装饰细节共同展示权力与审美的巅峰";
     if (/castle|fort|fortress|城堡|要塞/.test(n)) return "城墙与制高点仍保留明显的防御尺度与历史感";
     if (/temple|寺|庙/.test(n)) return "建筑比例、雕刻与宗教空间感是最值得看的部分";
-    if (/cathedral|church|教堂|大教堂/.test(n)) return "穹顶、立面与内部光线共同定义这座建筑";
+    if (/cathedral|church|教堂|大教堂/.test(n)) return `${cleanName(p)}需要补充建造年代、核心艺术品与具体历史事件`;
     if (/mosque|清真寺/.test(n)) return "穹顶、宣礼塔与几何装饰形成最鲜明的伊斯兰建筑语言";
     if (/monastery|修道院/.test(n)) return "宗教建筑嵌入山谷或岩壁，孤立感就是最大特色";
     if (/museum|博物馆/.test(n)) return "真正值得看的是馆藏本身，而不是只为建筑打卡";
