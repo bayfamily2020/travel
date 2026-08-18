@@ -636,7 +636,7 @@
     if (type.includes("宗教建筑")) return "建筑、仪式与艺术细节三者叠加，才是这里的核心价值";
     if (type.includes("城市街区")) return "最适合步行体验，用街巷尺度而不是单点打卡认识它";
     if (type.includes("自然景观")) return `${cleanName(p)}需要补充其独有地貌、生态或自然现象`;
-    if (type.includes("自然保护")) return "看的是完整生态系统，而不是某一个孤立景点";
+    if (type.includes("自然保护")) return `${cleanName(p)}需要补充代表动物、核心生境与最佳观察季节`;
     if (type.includes("博物馆")) return "核心价值在代表性馆藏与原作，而不是泛泛参观建筑";
     if (group.includes("特色体验")) return "这里最值得记住的是只有在当地才能成立的体验方式";
     return `${cleanName(p)}以自身最具代表性的历史、地貌或体验形成辨识度`;
