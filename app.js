@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v15";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v16";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  584:{city:"Port St Johns",file:"Underwater view of the sardine run as a dolphin hunts within dense schools of sardines.jpg"},
   116:{city:"Hanga Roa",image:"./assets/rank-116-easter-island.jpg?v=20260818"},
   565:{city:"Beijing",file:"Jiankou Great Wall.jpg"},
   591:{city:"Springdale",file:"Zion Angels landing Panorama.jpg"},
@@ -108,7 +109,6 @@ const featuredMedia = {
   570:{city:"Antalya",file:"Perge nymphaeum.jpg"},
   581:{city:"Cusco",file:"Ausangate Landscape.jpg"},
   583:{city:"Puerto Natales",file:"Valle De Frances Cerro Paine Grande.jpg"},
-  584:{city:"Puerto Natales",file:"Lago grey parque nacional torres del paine.jpg"},
   585:{city:"El Chaltén",file:"Laguna de Los Tres Panorama.jpg"},
   588:{city:"Kula",file:"Dawn on Haleakala Volcano, Hawaii.jpg"},
   593:{city:"Lihue",file:"Na Pali Coast Kauai Hawaii (32406276598).jpg"},
@@ -469,7 +469,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260817-titleformat`).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-584`).then(r => r.json())));
     places = chunks.flat();
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
