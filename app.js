@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v14";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v15";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  116:{city:"Hanga Roa",image:"./assets/rank-116-easter-island.jpg?v=20260818"},
   565:{city:"Beijing",file:"Jiankou Great Wall.jpg"},
   591:{city:"Springdale",file:"Zion Angels landing Panorama.jpg"},
   147:{city:"Lenakel",file:"Mount Yasur eruption 2006, Tanna Island, Vanuatu, VAN 0516.jpg"},
@@ -153,7 +154,7 @@ function seededMedia(p) {
   const featured = featuredMedia[p.rank];
   if (featured) return {
     city: featured.city,
-    image: `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(featured.file)}?width=720`
+    image: featured.image || `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(featured.file)}?width=720`
   };
   return mediaCache[p.rank] || null;
 }
