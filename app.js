@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v22";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v23";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,9 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  520:{city:"Paro",file:"Jakar tshechu, dancers (15222929514).jpg"},
+  589:{city:"Reykjavík",file:"Iceland thrihnukagigur-volcano inside of crater.jpg"},
+  630:{city:"Okayama",file:"Hadaka Matsuri (-Naked Festival-) in Saidaiji, Japan.jpg"},
   607:{city:"Ölgii",file:"Kazakh Eagle Hunters.JPG"},
   294:{city:"Angangueo",file:"Mariposa Monarca, El Rosario, Michoacán.jpg"},
   189:{city:"Tarragona",file:"5d8 CVXV (Colla Vella dels Xiquets de Valls, human tower, Catalonia).jpg"},
@@ -124,7 +127,6 @@ const featuredMedia = {
   622:{city:"Mývatn",file:"Iceland lake Northern Lights (Unsplash).jpg"},
   623:{city:"Inari",file:"Reindeer Ukonjärvi-Inarijärvi, Finland 07.jpg"},
   627:{city:"Göreme",file:"Hot air balloon ride at sunrise in Cappadocia 3.JPG"},
-  630:{city:"Kyoto",file:"Matcha and wagashi by MShades at Daigoji, Kyoto.jpg"},
   645:{city:"Seligman",file:"Route 66 emblem on Route 66.jpg"},
   646:{city:"Big Sur",file:"Bixby Creek Bridge, California, USA - May 2013.jpg"},
   649:{city:"Uyuni",file:"Luminous Salar de Uyuni (ann22042q).jpg"},
@@ -476,7 +478,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-607`).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-520-589-630`).then(r => r.json())));
     places = chunks.flat();
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
