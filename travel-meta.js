@@ -143,7 +143,8 @@ const destinationHighlights = {
 
 function wikiHref(p){
   const wikiOverrides = {
-    11:"https://zh.wikipedia.org/wiki/%E9%BA%A6%E5%9C%B0%E9%82%A3"
+    11:"https://zh.wikipedia.org/wiki/%E9%BA%A6%E5%9C%B0%E9%82%A3",
+    525:"https://zh.wikipedia.org/wiki/%E5%AE%8B%E5%B9%B2%E8%8A%82"
   };
   if (wikiOverrides[p.rank]) return wikiOverrides[p.rank];
   const full = String(p.name || "").replace(/^\s*[•·]\s*/, "").replace(/^\d+[.、]\s*/, "").trim();
