@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v28";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v29";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  525:{city:"Chiang Mai",file:"Songkran 002aa.jpg"},
   282:{city:"Volgograd",file:"The Motherland Calls.jpg"},
   520:{city:"Paro",image:"./assets/rank-520-bhutan-mask-dance.svg?v=20260818"},
   603:{city:"Banyuwangi",file:"Blue fire of Ijen, Kawah Ijen, Java, Indonesia, 20220821 0432 9581.jpg"},
@@ -484,7 +485,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-name-499`, {cache:"no-store"}).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-rank-525`, {cache:"no-store"}).then(r => r.json())));
     places = chunks.flat();
     const forcedOnePointRanks = new Set([517,520,586,603,607]);
     places.forEach(p => { if (forcedOnePointRanks.has(p.rank)) { p.points = 1; p.fame = "不去也行"; } });
