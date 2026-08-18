@@ -612,14 +612,14 @@
     if (/beach|海滩|bay|海湾/.test(n)) return "海岸线、沙色与水色组合成最具记忆点的海景";
     if (/mount|mountain|山|峰/.test(n)) return "山体轮廓本身就是主角，日出日落时最有层次";
     if (/forest|森林|redwood|杉/.test(n)) return "高大古树与林下雾气共同制造强烈原始感";
-    if (/national park|国家公园/.test(n)) return "核心看点不是单一地标，而是一整片保存完整的原始景观";
+    if (/national park|国家公园/.test(n)) return `${cleanName(p)}需要补充核心地貌、代表动物与具体游览方式`;
     if (/palace|宫/.test(n)) return "建筑、庭院与装饰细节共同展示权力与审美的巅峰";
     if (/castle|fort|fortress|城堡|要塞/.test(n)) return "城墙与制高点仍保留明显的防御尺度与历史感";
     if (/temple|寺|庙/.test(n)) return "建筑比例、雕刻与宗教空间感是最值得看的部分";
     if (/cathedral|church|教堂|大教堂/.test(n)) return `${cleanName(p)}需要补充建造年代、核心艺术品与具体历史事件`;
     if (/mosque|清真寺/.test(n)) return "穹顶、宣礼塔与几何装饰形成最鲜明的伊斯兰建筑语言";
     if (/monastery|修道院/.test(n)) return "宗教建筑嵌入山谷或岩壁，孤立感就是最大特色";
-    if (/museum|博物馆/.test(n)) return "真正值得看的是馆藏本身，而不是只为建筑打卡";
+    if (/museum|博物馆/.test(n)) return `${cleanName(p)}需要补充镇馆之宝、核心展厅与收藏特色`;
     if (/old town|old city|古城|老城|medina/.test(n)) return "最适合步行钻进街巷，用建筑、市场与日常生活认识城市";
     if (/square|广场/.test(n)) return `${cleanName(p)}需要补充周围代表建筑、历史事件与具体公共活动`;
     if (/bridge|桥/.test(n)) return "桥体本身与两侧城市天际线共同构成经典视角";
