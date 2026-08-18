@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v24";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v25";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,8 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  603:{city:"Banyuwangi",file:"Blue fire of Ijen, Kawah Ijen, Java, Indonesia, 20220821 0432 9581.jpg"},
+  614:{city:"Antigua",file:"Fuego eruption by night - 54974845875.jpg"},
   528:{city:"Ubud",file:"Bali 040 - Ubud - kecak fire dance.jpg"},
   520:{city:"Paro",file:"Jakar tshechu, dancers (15222929514).jpg"},
   589:{city:"Reykjavík",file:"Iceland thrihnukagigur-volcano inside of crater.jpg"},
@@ -479,7 +481,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-528`).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-603-614`).then(r => r.json())));
     places = chunks.flat();
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
