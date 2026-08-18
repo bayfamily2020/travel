@@ -1,5 +1,5 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
-const MEDIA_CACHE_KEY = "world-travel-650-media-v21";
+const MEDIA_CACHE_KEY = "world-travel-650-media-v22";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -14,6 +14,7 @@ function escapeHtml(value) {
 }
 
 const featuredMedia = {
+  607:{city:"Ölgii",file:"Kazakh Eagle Hunters.JPG"},
   294:{city:"Angangueo",file:"Mariposa Monarca, El Rosario, Michoacán.jpg"},
   189:{city:"Tarragona",file:"5d8 CVXV (Colla Vella dels Xiquets de Valls, human tower, Catalonia).jpg"},
   582:{city:"Lonorore",file:"Landdiving2.jpg"},
@@ -475,7 +476,7 @@ function render() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-294`).then(r => r.json())));
+    const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-607`).then(r => r.json())));
     places = chunks.flat();
     const base = places.slice(0, 500);
     const saved = localStorage.getItem(STORAGE_KEY);
