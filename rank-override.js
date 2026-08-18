@@ -189,7 +189,7 @@ seededMedia = function(p) {
   const featured = featuredMedia[p.rank];
   if (featured) return {
     city: featured.city,
-    image: `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(featured.file)}?width=720`
+    image: featured.image || `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(featured.file)}?width=720`
   };
   const cached = mediaCache[p.rank];
   if (!cached) return null;
@@ -202,7 +202,7 @@ fetchMedia = async function(p) {
   const featured = featuredMedia[p.rank];
   if (featured) return {
     city: featured.city,
-    image: `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(featured.file)}?width=720`
+    image: featured.image || `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(featured.file)}?width=720`
   };
 
   const cached = mediaCache[p.rank];
