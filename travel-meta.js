@@ -263,7 +263,14 @@ function ensureMonthFilter(){
 const monthStyle = document.createElement("style");
 monthStyle.textContent = `.best-months{display:block;margin-top:7px;font-size:12px;line-height:1.35;color:#7b5a40;font-weight:700;letter-spacing:.02em}.best-months b{color:#173b31}.place-card .description{font-size:13px;line-height:1.4;margin-top:8px}`;
 monthStyle.textContent += `.place-wiki-link{color:inherit;text-decoration:none;display:inline;padding:5px 2px;margin:-5px -2px;border-radius:6px}.place-wiki-link span{font-size:.72em;opacity:.62;margin-left:2px}.place-wiki-link:focus-visible{outline:2px solid #dd6b3d;outline-offset:2px}@media(hover:hover){.place-wiki-link:hover{color:#b54f2d;text-decoration:underline;text-underline-offset:3px}}`;
+monthStyle.textContent += `.bay-travelog{display:inline-flex;align-items:center;gap:5px;margin-top:9px;padding:6px 10px;border:1px solid #c65f38;border-radius:999px;background:#fff5ec;color:#9a4024;font-size:12px;line-height:1.2;font-weight:800;text-decoration:none;letter-spacing:.03em}.bay-travelog:focus-visible{outline:2px solid #173b31;outline-offset:2px}@media(hover:hover){.bay-travelog:hover{background:#dd6b3d;color:#fff}}@media(max-width:580px){.bay-travelog{margin-top:7px;padding:5px 9px;font-size:11px}}`;
 document.head.appendChild(monthStyle);
+
+function travelogMarkup(p){
+  const item = window.BAY_TRAVELOGS?.[p.rank];
+  if (!item) return "";
+  return `<a class="bay-travelog" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(item.title)}" aria-label="阅读贝版游记：${escapeHtml(item.title)}" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()">贝版游记 <span aria-hidden="true">↗</span></a>`;
+}
 
 render = function() {
   ensureMonthFilter();
@@ -295,7 +302,7 @@ render = function() {
     const media = seededMedia(p);
     const image = media?.image || "";
     const city = media?.city || "Locating…";
-    return `<button class="place-card ${done ? "done" : ""} with-image" data-rank="${p.rank}" aria-pressed="${done}"><span class="image-wrap"><img class="place-image" ${image ? `src="${escapeHtml(image)}"` : "hidden"} alt="${escapeHtml(p.name)}" loading="lazy" decoding="async"><span class="image-placeholder" ${image ? "hidden" : ""}>EXPLORE</span><span class="image-credit">Wikimedia Commons</span></span><span class="rank">#${String(p.rank).padStart(3,"0")}</span><span class="points p${p.points}">${p.points} 分</span><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><span class="place-name"><a class="place-wiki-link" href="${escapeHtml(wikiHref(p))}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()">${escapeHtml(p.name)} <span aria-hidden="true">↗</span></a></span><span class="meta"><b>${escapeHtml(p.continent)}</b> · ${escapeHtml(p.country)}</span><span class="gateway"><b>Gateway city</b> · <span class="gateway-city">${escapeHtml(city)}</span></span><span class="description">${escapeHtml(descriptionFor(p))}</span><span class="best-months"><b>最佳月份</b> · ${escapeHtml(bestMonthsLabel(p))}</span><span class="type">${escapeHtml(p.group)} · ${escapeHtml(p.type)}</span>${p.evidence ? '<span class="evidence">已有旅行记录</span>' : ""}</button>`;
+    return `<button class="place-card ${done ? "done" : ""} with-image" data-rank="${p.rank}" aria-pressed="${done}"><span class="image-wrap"><img class="place-image" ${image ? `src="${escapeHtml(image)}"` : "hidden"} alt="${escapeHtml(p.name)}" loading="lazy" decoding="async"><span class="image-placeholder" ${image ? "hidden" : ""}>EXPLORE</span><span class="image-credit">Wikimedia Commons</span></span><span class="rank">#${String(p.rank).padStart(3,"0")}</span><span class="points p${p.points}">${p.points} 分</span><span class="check" aria-hidden="true">${done ? "✓" : ""}</span><span class="place-name"><a class="place-wiki-link" href="${escapeHtml(wikiHref(p))}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" onpointerdown="event.stopPropagation()">${escapeHtml(p.name)} <span aria-hidden="true">↗</span></a></span><span class="meta"><b>${escapeHtml(p.continent)}</b> · ${escapeHtml(p.country)}</span><span class="gateway"><b>Gateway city</b> · <span class="gateway-city">${escapeHtml(city)}</span></span><span class="description">${escapeHtml(descriptionFor(p))}</span><span class="best-months"><b>最佳月份</b> · ${escapeHtml(bestMonthsLabel(p))}</span>${travelogMarkup(p)}<span class="type">${escapeHtml(p.group)} · ${escapeHtml(p.type)}</span>${p.evidence ? '<span class="evidence">已有旅行记录</span>' : ""}</button>`;
   }).join("");
   hydrateVisibleMedia();
   updateSummary();
