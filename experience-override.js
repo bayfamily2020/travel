@@ -27,6 +27,15 @@ const experienceOverrides = {
     points: 2,
     fame: "此生必去"
   },
+  625: {
+    name: "埃拉特红海潜水（Red Sea Diving in Eilat）",
+    country: "以色列 / Israel",
+    continent: "亚洲",
+    group: "特色体验",
+    type: "在埃拉特红海珊瑚礁潜水，近距离探索热带鱼群与清澈海底",
+    points: 2,
+    fame: "此生必去"
+  },
   628: {
     name: "南极冰泳（Antarctic Polar Plunge）",
     country: "南极洲 / Antarctica",
