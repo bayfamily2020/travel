@@ -33,10 +33,10 @@
     60:iceland, 93:iceland, 108:tahiti, 110:budapest, 113:mostar, 124:norway,
     135:norway, 145:iceland, 172:prague, 175:kinkakuji, 176:iceland, 210:capeTown,
     211:iceland, 212:namibia, 216:norway, 242:borobudur, 250:iceland, 284:fiji,
-    290:socotra, 302:madagascar, 319:norway, 334:jokhang, 350:tahiti, 351:iceland,
+    290:socotra, 302:madagascar, 303:dolomites, 319:norway, 334:jokhang, 350:tahiti, 351:iceland,
     359:iceland, 383:camino, 384:komodo, 385:madagascar, 415:namibia, 426:namibia,
     434:fiji, 444:kotor, 476:samoa, 494:norway, 495:namibia, 502:rio,
-    516:threeGorges, 561:camino, 566:kumano, 596:dolomites, 598:iceland, 648:norway
+    516:threeGorges, 561:camino, 566:kumano, 598:iceland, 648:norway
   };
 
   window.BAY_TRAVELOGS = Object.freeze(links);
