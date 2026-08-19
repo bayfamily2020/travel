@@ -21,3 +21,28 @@ if (typeof render === "function") {
 
 queueMicrotask(applySriLankaContinentFix);
 document.addEventListener("DOMContentLoaded", applySriLankaContinentFix, { once: true });
+
+// Improve visibility of the card check circle against photos and light backgrounds.
+(function improveCardCheckVisibility() {
+  const style = document.createElement("style");
+  style.textContent = `
+    .check {
+      border-width: 3px !important;
+      border-color: #4f5f55 !important;
+      background: rgba(251, 248, 240, 0.88);
+      box-shadow: 0 1px 4px rgba(23, 33, 27, 0.28), 0 0 0 1px rgba(255,255,255,0.55);
+      color: #fff;
+    }
+    .place-card.done .check {
+      background: #1f4b3b !important;
+      border-color: #173b31 !important;
+      box-shadow: 0 1px 5px rgba(23, 33, 27, 0.35), 0 0 0 1px rgba(255,255,255,0.6);
+    }
+    @media (max-width: 580px) {
+      .check {
+        border-width: 3px !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+})();
