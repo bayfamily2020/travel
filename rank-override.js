@@ -107,6 +107,7 @@ updateSummary = function() {
   $("progress").textContent = `${progress}%`;
   if ($("china-percentile")) $("china-percentile").textContent = `估算超过全球 ${formatChinaTravelPercentile(progress)}% 的华人`;
   $("progress-bar").style.width = `${progress}%`;
+  updateTravelAgeEstimate(visited.size);
 
   const levels = [
     [2, "工位钉子户"],
