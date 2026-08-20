@@ -416,6 +416,16 @@ async function drawShareCard(score,max,progress,level){
   const classicCount=done.filter(p=>p.rank<=500).length;
   const countryCount=new Set(done.map(p=>String(p.country).split(/\s*[\/(（]/)[0].trim()).filter(Boolean)).size;
   const continentCount=new Set(done.map(p=>p.continent).filter(Boolean)).size;
+  const groupRates=[...new Set(places.map(p=>p.group).filter(Boolean))].map(group=>{
+    const total=places.filter(p=>p.group===group).length;
+    const completed=done.filter(p=>p.group===group).length;
+    return {group,rate:total?completed/total*100:100};
+  }).sort((a,b)=>a.rate-b.rate);
+  const weakestGroup=done.length===0
+    ? {group:"全部类别",rate:0}
+    : done.length===places.length
+      ? {group:"暂无欠缺",rate:100}
+      : groupRates[0];
   const completionEstimate=travelCompletionEstimate(done.length);
   ctx.clearRect(0,0,1080,1350);ctx.fillStyle="#173b31";ctx.fillRect(0,0,1080,1350);
   ctx.fillStyle="rgba(221,107,61,.16)";ctx.beginPath();ctx.arc(970,100,300,0,Math.PI*2);ctx.fill();
@@ -434,6 +444,8 @@ async function drawShareCard(score,max,progress,level){
   ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText("环球完成度",968,606);ctx.textAlign="left";
   const stats=[[`已打卡项目 · 经典项目 ${classicCount}`,done.length],["国家／地区",countryCount],["覆盖大洲",continentCount],["完成650项还需",completionEstimate?.short||"待估算"]];
   stats.forEach(([label,value],i)=>{const x=72+(i%2)*476,y=682+Math.floor(i/2)*158;roundedRect(ctx,x,y,460,136,22,"rgba(255,255,255,.07)");ctx.fillStyle="#fff";ctx.font="700 52px Georgia";ctx.fillText(String(value),x+30,y+70);ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText(label,x+30,y+108);});
+  ctx.fillStyle="#ff9a69";ctx.font='700 19px "Microsoft YaHei",sans-serif';
+  ctx.fillText(`最欠缺：${weakestGroup.group}（完成 ${Math.round(weakestGroup.rate)}%）`,102,1002);
   roundedRect(ctx,72,1012,250,250,20,"#fff");
   const qr=await getShareQr();if(qr)ctx.drawImage(qr,87,1027,220,220);
   ctx.fillStyle="#fff";ctx.font='700 34px "Microsoft YaHei",sans-serif';ctx.fillText("扫码测测你的旅行段位",365,1100);
