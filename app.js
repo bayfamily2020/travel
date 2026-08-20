@@ -29,7 +29,7 @@ const featuredMedia = {
   574:{city:"Kemi",file:"2017-03-23 Sampo in Port of Kemi (Finland) 02.jpg"},
   610:{city:"La Paz",file:"Death Road2.jpg"},
   611:{city:"León",file:"Volcano Boarding Cerro Negro.jpg"},
-  600:{city:"Neiafu",file:"Humpback Whales - Flickr - Christopher.Michel.jpg"},
+  600:{city:"Oymyakon",file:"Oymyakon - 190228 DSC 5642.jpg"},
   625:{city:"Eilat",file:"Corals in Eilat coral reef nature reserve 1.jpg"},
   584:{city:"Port St Johns",file:"Underwater view of the sardine run as a dolphin hunts within dense schools of sardines.jpg"},
   116:{city:"Hanga Roa",image:"./assets/rank-116-easter-island.jpg?v=20260818"},
