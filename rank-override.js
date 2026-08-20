@@ -93,7 +93,7 @@ drawShareCard = async function(score,max,progress,level){
   ctx.textAlign="right";
   ctx.fillStyle="#ff9a69";
   ctx.font='700 18px "Microsoft YaHei",sans-serif';
-  ctx.fillText(`估算超过全国 ${chinaPercentile}% 的人`,968,632);
+  ctx.fillText(`估算超过全球 ${chinaPercentile}% 的华人`,968,632);
   ctx.textAlign="left";
 };
 
@@ -105,7 +105,7 @@ updateSummary = function() {
   $("score").textContent = score;
   $("max-score").textContent = `/ ${max} 得分`;
   $("progress").textContent = `${progress}%`;
-  if ($("china-percentile")) $("china-percentile").textContent = `估算超过全国 ${formatChinaTravelPercentile(progress)}% 的人`;
+  if ($("china-percentile")) $("china-percentile").textContent = `估算超过全球 ${formatChinaTravelPercentile(progress)}% 的华人`;
   $("progress-bar").style.width = `${progress}%`;
 
   const levels = [
@@ -132,7 +132,7 @@ updateSummary = function() {
   if ($("final-score")) $("final-score").textContent = score;
   if ($("final-max-score")) $("final-max-score").textContent = `/ ${max} 得分`;
   if ($("final-progress")) $("final-progress").textContent = `${progress}%`;
-  if ($("final-china-percentile")) $("final-china-percentile").textContent = `估算超过全国 ${formatChinaTravelPercentile(progress)}% 的人`;
+  if ($("final-china-percentile")) $("final-china-percentile").textContent = `估算超过全球 ${formatChinaTravelPercentile(progress)}% 的华人`;
   if ($("final-level")) $("final-level").textContent = level;
   drawShareCard(score, max, progress, level);
 };
