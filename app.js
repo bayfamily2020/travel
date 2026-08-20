@@ -30,6 +30,7 @@ const featuredMedia = {
   610:{city:"La Paz",file:"Death Road2.jpg"},
   611:{city:"León",file:"Volcano Boarding Cerro Negro.jpg"},
   600:{city:"Neiafu",file:"Humpback Whales - Flickr - Christopher.Michel.jpg"},
+  625:{city:"Eilat",file:"Corals in Eilat coral reef nature reserve 1.jpg"},
   584:{city:"Port St Johns",file:"Underwater view of the sardine run as a dolphin hunts within dense schools of sardines.jpg"},
   116:{city:"Hanga Roa",image:"./assets/rank-116-easter-island.jpg?v=20260818"},
   565:{city:"Beijing",file:"Jiankou Great Wall.jpg"},
