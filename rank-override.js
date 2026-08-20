@@ -25,6 +25,33 @@ function travelDiagnosis(level){
   return travelDiagnoses[level] || "以上诊断仅供娱乐，如有不服，建议继续买机票。";
 }
 
+// Entertainment estimate calibrated to official mainland outbound-trip totals.
+// The source data counts trips rather than unique people, so the curve is
+// intentionally conservative at low completion rates and must not be read as
+// a population survey.
+const chinaTravelPercentileKnots = [
+  [0,0],[1,15],[2,30],[3,42],[5,58],[8,72],[10,80],[15,90],
+  [20,95],[30,98],[40,99.2],[50,99.7],[60,99.9],[70,99.97],
+  [85,99.995],[100,99.999]
+];
+
+function estimateChinaTravelPercentile(progress){
+  const value=Math.max(0,Math.min(100,Number(progress)||0));
+  for(let i=1;i<chinaTravelPercentileKnots.length;i++){
+    const [x2,y2]=chinaTravelPercentileKnots[i];
+    const [x1,y1]=chinaTravelPercentileKnots[i-1];
+    if(value<=x2)return y1+(y2-y1)*(value-x1)/(x2-x1);
+  }
+  return 99.999;
+}
+
+function formatChinaTravelPercentile(progress){
+  const value=estimateChinaTravelPercentile(progress);
+  if(value>=99.99)return value.toFixed(3).replace(/0+$/,'').replace(/\.$/,'');
+  if(value>=99)return value.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+  return value.toFixed(1).replace(/\.0$/,'');
+}
+
 // Add the diagnosis to the share card without disturbing the existing card layout.
 const baseDrawShareCard = drawShareCard;
 drawShareCard = async function(score,max,progress,level){
@@ -62,6 +89,11 @@ drawShareCard = async function(score,max,progress,level){
   ctx.fillStyle="#d7e1d9";
   ctx.font='700 28px "Microsoft YaHei",sans-serif';
   visibleLines.forEach((l,i)=>ctx.fillText(l,centerX,contentTop+titleHeight+titleGap+28+i*lineHeight));
+  const chinaPercentile=formatChinaTravelPercentile(progress);
+  ctx.textAlign="right";
+  ctx.fillStyle="#ff9a69";
+  ctx.font='700 18px "Microsoft YaHei",sans-serif';
+  ctx.fillText(`估算超过全国 ${chinaPercentile}% 的人`,968,632);
   ctx.textAlign="left";
 };
 
@@ -73,6 +105,7 @@ updateSummary = function() {
   $("score").textContent = score;
   $("max-score").textContent = `/ ${max} 得分`;
   $("progress").textContent = `${progress}%`;
+  if ($("china-percentile")) $("china-percentile").textContent = `估算超过全国 ${formatChinaTravelPercentile(progress)}% 的人`;
   $("progress-bar").style.width = `${progress}%`;
 
   const levels = [
@@ -99,6 +132,7 @@ updateSummary = function() {
   if ($("final-score")) $("final-score").textContent = score;
   if ($("final-max-score")) $("final-max-score").textContent = `/ ${max} 得分`;
   if ($("final-progress")) $("final-progress").textContent = `${progress}%`;
+  if ($("final-china-percentile")) $("final-china-percentile").textContent = `估算超过全国 ${formatChinaTravelPercentile(progress)}% 的人`;
   if ($("final-level")) $("final-level").textContent = level;
   drawShareCard(score, max, progress, level);
 };
