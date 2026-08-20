@@ -35,6 +35,7 @@
 .finish-score>div:last-child{border-right:0}
 .finish-score strong{display:block;color:#fff;font:600 clamp(25px,3vw,40px)/1.2 Georgia,"Noto Serif SC",serif}
 .finish-score span{color:#bcd0c2;font-size:11px;letter-spacing:.08em}
+.china-percentile{display:block!important;margin-top:6px;color:#ff9a69!important;letter-spacing:0!important;font-weight:700}
 .back-top{display:inline-block;color:#fff;text-decoration:none;border-bottom:1px solid #ef8458;padding-bottom:4px;font-size:13px}
 @media(max-width:900px){.finish{margin:0 28px 28px}}
 @media(max-width:580px){.finish{margin:0 18px 24px;padding:34px 20px}.finish-score{grid-template-columns:1fr}.finish-score>div{border-right:0;border-bottom:1px solid rgba(255,255,255,.18);padding:18px 4px}.finish-score>div:last-child{border-bottom:0}}
