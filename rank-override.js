@@ -37,6 +37,12 @@ const chinaTravelPercentileKnots = [
 
 function estimateChinaTravelPercentile(progress){
   const value=Math.max(0,Math.min(100,Number(progress)||0));
+  if(value<=20){
+    // Smooth saturation curve fixed at 0%→0%, 10%→90%, 20%→96.5%.
+    const ceiling=97.0059880239521;
+    const decay=-Math.log(0.0722222222222222)/10;
+    return ceiling*(1-Math.exp(-decay*value));
+  }
   for(let i=1;i<chinaTravelPercentileKnots.length;i++){
     const [x2,y2]=chinaTravelPercentileKnots[i];
     const [x1,y1]=chinaTravelPercentileKnots[i-1];
@@ -47,8 +53,8 @@ function estimateChinaTravelPercentile(progress){
 
 function formatChinaTravelPercentile(progress){
   const value=estimateChinaTravelPercentile(progress);
-  if(value>=90)return value.toFixed(2);
-  return value.toFixed(1).replace(/\.0$/,'');
+  if(value===0)return "0";
+  return value.toFixed(2);
 }
 
 // Add the diagnosis to the share card without disturbing the existing card layout.
