@@ -36,6 +36,7 @@
 .finish-score strong{display:block;color:#fff;font:600 clamp(25px,3vw,40px)/1.2 Georgia,"Noto Serif SC",serif}
 .finish-score span{color:#bcd0c2;font-size:11px;letter-spacing:.08em}
 .china-percentile{display:block!important;margin-top:6px;color:#ff9a69!important;letter-spacing:0!important;font-weight:700}
+.age-calculator{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:24px}.age-calculator label{display:flex;align-items:center;gap:10px;color:#d6e0d8;font-size:14px}.age-calculator input{width:88px;height:42px;padding:0 12px;border:1px solid rgba(255,255,255,.32);border-radius:8px;background:rgba(255,255,255,.08);color:#fff;font-size:18px;font-weight:700;outline:none}.age-calculator input:focus{border-color:#ff9a69}.age-calculator input::placeholder{color:#8fa99a}.age-estimate{color:#ff9a69;font-size:13px;font-weight:700}.age-note{width:100%;color:#9fb5a7;font-size:11px}
 .back-top{display:inline-block;color:#fff;text-decoration:none;border-bottom:1px solid #ef8458;padding-bottom:4px;font-size:13px}
 @media(max-width:900px){.finish{margin:0 28px 28px}}
 @media(max-width:580px){.finish{margin:0 18px 24px;padding:34px 20px}.finish-score{grid-template-columns:1fr}.finish-score>div{border-right:0;border-bottom:1px solid rgba(255,255,255,.18);padding:18px 4px}.finish-score>div:last-child{border-bottom:0}}
