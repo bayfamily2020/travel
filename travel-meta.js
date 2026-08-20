@@ -145,6 +145,7 @@ function wikiHref(p){
   const wikiOverrides = {
     11:"https://zh.wikipedia.org/wiki/%E9%BA%A6%E5%9C%B0%E9%82%A3",
     525:"https://zh.wikipedia.org/wiki/%E5%AE%8B%E5%B9%B2%E8%8A%82",
+    625:"https://zh.wikipedia.org/wiki/%E5%9F%83%E6%8B%89%E7%89%B9",
     601:"https://en.wikipedia.org/wiki/Pumapunku"
   };
   if (wikiOverrides[p.rank]) return wikiOverrides[p.rank];
