@@ -143,6 +143,7 @@ const destinationHighlights = {
 
 function wikiHref(p){
   const wikiOverrides = {
+    600:"https://en.wikipedia.org/wiki/Oymyakon",
     11:"https://zh.wikipedia.org/wiki/%E9%BA%A6%E5%9C%B0%E9%82%A3",
     525:"https://zh.wikipedia.org/wiki/%E5%AE%8B%E5%B9%B2%E8%8A%82",
     585:"https://zh.wikipedia.org/wiki/%E7%BB%B4%E5%A4%9A%E5%88%A9%E4%BA%9A%E7%80%91%E5%B8%83",
@@ -195,7 +196,7 @@ const bestMonthOverrides = {
   582:[4,5,6],
   574:[12,1,2,3,4],
   610:[5,6,7,8,9,10], 611:[11,12,1,2,3,4],
-  600:[7,8,9,10],
+  600:[12,1,2],
   1:[11,12,1,2], 2:[6,7,8,9,10], 3:[5,6,7,8,9], 4:[4,5,9,10], 5:[10,11,12,1,2,3],
   6:[4,5,9,10], 7:[4,5,9,10], 8:[3,4,8,9,10], 9:[3,4,5,9,10], 10:[4,5,9,10],
   12:[11,12,1,2,3], 13:[3,4,5,10,11], 14:[11,12,1,2,3,4], 17:[12,1,2,3], 18:[5,6,9,10],
