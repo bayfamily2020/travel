@@ -6,7 +6,7 @@
   <meta name="description" content="650项环球旅行达成度测试：勾选你的旅行足迹，测出自己的旅行段位。" />
   <title>环球旅行达成度测试</title>
   <link rel="stylesheet" href="./style.css?v=20260819-1325" />
-  <link rel="stylesheet" href="./level.css?v=20260820-percentile" />
+  <link rel="stylesheet" href="./level.css?v=20260820-age-model" />
   <style>
     @media (max-width:580px){
       .place-card,.place-card.with-image{min-height:0!important;height:auto!important;justify-content:flex-start!important;}
@@ -18,7 +18,7 @@
 </head>
 <body>
   <main>
-    <section class="hero"><div class="hero-inner"><nav><span class="brand-mark">W650</span><span>环球旅行达人测评</span><div class="nav-actions"><a id="country-sort-shortcut" href="#list">按国家浏览</a><a href="#list">开始测试 ↓</a></div></nav><div class="eyebrow">HOW FAR HAVE YOU TRAVELLED?</div><h1>环球旅行<br><em>达成度测试</em></h1><p class="intro">贝版精选了500个经典目的地，150项世界闻名庆典、活动和代表性旅行体验。勾选你的旅行足迹，测出自己的旅行段位。</p><div class="score-board"><div><strong id="count">0</strong><span>/ 650 已打卡</span></div><div><strong id="score">0</strong><span id="max-score">/ 0 得分</span></div><div><strong id="progress">0%</strong><span>环球完成度</span><span class="china-percentile" id="china-percentile">估算超过全球 0% 的华人</span></div><div class="level-card"><strong id="level">工位钉子户</strong><span>当前旅行段位</span></div></div><div class="progress-track"><i id="progress-bar"></i></div></div></section>
+    <section class="hero"><div class="hero-inner"><nav><span class="brand-mark">W650</span><span>环球旅行达人测评</span><div class="nav-actions"><a id="country-sort-shortcut" href="#list">按国家浏览</a><a href="#list">开始测试 ↓</a></div></nav><div class="eyebrow">HOW FAR HAVE YOU TRAVELLED?</div><h1>环球旅行<br><em>达成度测试</em></h1><p class="intro">贝版精选了500个经典目的地，150项世界闻名庆典、活动和代表性旅行体验。勾选你的旅行足迹，测出自己的旅行段位。</p><div class="age-calculator"><label for="traveler-age">你的年龄 <input id="traveler-age" type="number" min="22" max="100" inputmode="numeric" placeholder="35" aria-describedby="age-estimate"> 岁</label><span class="age-estimate" id="age-estimate">输入年龄后，按21岁开始旅行估算完成时间。</span><span class="age-note">计算方式：已完成项目数 ÷ 21岁至今的年数，推算完成剩余项目所需时间。</span></div><div class="score-board"><div><strong id="count">0</strong><span>/ 650 已打卡</span></div><div><strong id="score">0</strong><span id="max-score">/ 0 得分</span></div><div><strong id="progress">0%</strong><span>环球完成度</span><span class="china-percentile" id="china-percentile">估算超过全球 0% 的华人</span></div><div class="level-card"><strong id="level">工位钉子户</strong><span>当前旅行段位</span></div></div><div class="progress-track"><i id="progress-bar"></i></div></div></section>
     <section class="content" id="list"><div class="section-head"><div><span class="kicker">YOUR WORLD / 你的世界</span><h2>650项经典景点与体验</h2></div><div class="legend"><span><b class="dot two"></b>此生必去 · 2分</span><span><b class="dot one"></b>不去也行 · 1分</span></div></div>
       <div class="filters"><label class="search"><span>⌕</span><input id="query" placeholder="搜索地名、国家、节日或体验…"></label><select id="sort" aria-label="排序"><option value="rank">排序：按排名</option><option value="country">排序：按国家</option><option value="points">排序：按分值</option></select><select id="group" aria-label="按项目类型筛选"><option value="全部类型">类型：全部</option><option>地点与景观</option><option>节日庆典</option><option>徒步与朝圣</option><option>特色体验</option></select><select id="continent" aria-label="按洲别筛选"><option value="全部">洲别：全部</option><option>亚洲</option><option>欧洲</option><option>美洲</option><option>非洲</option><option>大洋洲</option><option>南极洲</option></select><select id="fame" aria-label="按知名度筛选"><option value="全部">知名度：全部</option><option>此生必去</option><option>不去也行</option></select><select id="status" aria-label="按完成状态筛选"><option value="全部">状态：全部</option><option>已去</option><option>未去</option></select></div>
       <div class="result-bar"><span>显示 <b id="shown">0 个项目</b></span><button id="reset">清空打卡记录</button></div><nav class="pagination" id="pagination-top" aria-label="清单分页"></nav><div class="place-grid" id="grid"></div><nav class="pagination pagination-bottom" id="pagination-bottom" aria-label="清单分页"></nav><div class="empty" id="empty" hidden>没有找到符合条件的项目，试试清除部分筛选。</div>
@@ -38,10 +38,10 @@
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
   <script src="./travelog-links.js?v=20260819-1325" defer></script>
-  <script src="./app.js?v=20260819-1325" defer></script>
+  <script src="./app.js?v=20260820-age-model" defer></script>
   <script src="./continent-override.js?v=20260819-1325" defer></script>
   <script src="./experience-override.js?v=20260819-625" defer></script>
-  <script src="./rank-override.js?v=20260820-global-chinese" defer></script>
+  <script src="./rank-override.js?v=20260820-age-model" defer></script>
   <script src="./travel-meta.js?v=20260819-1325" defer></script>
   <script src="./highlight-fix.js?v=20260819-1325" defer></script>
 </body>
