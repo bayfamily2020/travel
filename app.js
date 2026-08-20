@@ -31,6 +31,7 @@ const featuredMedia = {
   611:{city:"León",file:"Volcano Boarding Cerro Negro.jpg"},
   600:{city:"Oymyakon",file:"Oymyakon - 190228 DSC 5642.jpg"},
   625:{city:"Eilat",file:"Corals in Eilat coral reef nature reserve 1.jpg"},
+  621:{city:"Ushuaia",file:"Silver Endeavour - Gerlache Strait - Antarctica - V-P.jpg"},
   584:{city:"Port St Johns",file:"Underwater view of the sardine run as a dolphin hunts within dense schools of sardines.jpg"},
   116:{city:"Hanga Roa",image:"./assets/rank-116-easter-island.jpg?v=20260818"},
   565:{city:"Beijing",file:"Jiankou Great Wall.jpg"},
