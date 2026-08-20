@@ -128,7 +128,7 @@ const featuredMedia = {
   583:{city:"Puerto Natales",file:"Valle De Frances Cerro Paine Grande.jpg"},
   585:{city:"Livingstone",file:"Tourists swimming at Victoria Falls.jpg"},
   616:{city:"Arusha",file:"Baloon over Serengeti.jpg"},
-  628:{city:"Deception Island",file:"A real Polar plunge 150123-G-JL323-159.jpg"},
+  628:{city:"Deception Island",image:"./assets/rank-628-antarctic-plunge.svg?v=20260820"},
   588:{city:"Kula",file:"Dawn on Haleakala Volcano, Hawaii.jpg"},
   593:{city:"Lihue",file:"Na Pali Coast Kauai Hawaii (32406276598).jpg"},
   615:{city:"Kokoda",file:"Kokoda Track WV banner.JPG"},
