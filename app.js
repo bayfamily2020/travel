@@ -413,6 +413,7 @@ async function drawShareCard(score,max,progress,level){
   const canvas=$("share-card");if(!canvas)return;
   const ctx=canvas.getContext("2d");
   const done=places.filter(p=>visited.has(p.rank));
+  const classicCount=done.filter(p=>p.rank<=500).length;
   const countryCount=new Set(done.map(p=>String(p.country).split(/\s*[\/(（]/)[0].trim()).filter(Boolean)).size;
   const continentCount=new Set(done.map(p=>p.continent).filter(Boolean)).size;
   const completionEstimate=travelCompletionEstimate(done.length);
@@ -431,7 +432,7 @@ async function drawShareCard(score,max,progress,level){
   ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText("/ "+max+" 得分",112,606);
   ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="700 76px Georgia";ctx.fillText(progress+"%",968,562);
   ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText("环球完成度",968,606);ctx.textAlign="left";
-  const stats=[["已打卡项目",done.length],["国家／地区",countryCount],["覆盖大洲",continentCount],["完成650项还需",completionEstimate?.short||"待估算"]];
+  const stats=[[`已打卡项目 · 经典项目 ${classicCount}`,done.length],["国家／地区",countryCount],["覆盖大洲",continentCount],["完成650项还需",completionEstimate?.short||"待估算"]];
   stats.forEach(([label,value],i)=>{const x=72+(i%2)*476,y=682+Math.floor(i/2)*158;roundedRect(ctx,x,y,460,136,22,"rgba(255,255,255,.07)");ctx.fillStyle="#fff";ctx.font="700 52px Georgia";ctx.fillText(String(value),x+30,y+70);ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText(label,x+30,y+108);});
   roundedRect(ctx,72,1012,250,250,20,"#fff");
   const qr=await getShareQr();if(qr)ctx.drawImage(qr,87,1027,220,220);
