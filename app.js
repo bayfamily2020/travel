@@ -33,7 +33,7 @@ const featuredMedia = {
   584:{city:"Port St Johns",file:"Underwater view of the sardine run as a dolphin hunts within dense schools of sardines.jpg"},
   116:{city:"Hanga Roa",image:"./assets/rank-116-easter-island.jpg?v=20260818"},
   565:{city:"Beijing",file:"Jiankou Great Wall.jpg"},
-  591:{city:"Springdale",file:"Zion Angels landing Panorama.jpg"},
+  591:{city:"Neiafu",file:"Humpback Whales - Flickr - Christopher.Michel.jpg"},
   147:{city:"Lenakel",file:"Mount Yasur eruption 2006, Tanna Island, Vanuatu, VAN 0516.jpg"},
   567:{city:"Probolinggo",file:"Indonesia - Bromo (37395212635).jpg"},
   374:{city:"Jeju City",file:"Jeju - Seongsan Ilchulbong.jpg"},
