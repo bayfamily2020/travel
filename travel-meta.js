@@ -143,6 +143,7 @@ const destinationHighlights = {
 
 function wikiHref(p){
   const wikiOverrides = {
+    235:"https://en.wikipedia.org/wiki/Alc%C3%A1zar_of_Seville",
     600:"https://en.wikipedia.org/wiki/Oymyakon",
     11:"https://zh.wikipedia.org/wiki/%E9%BA%A6%E5%9C%B0%E9%82%A3",
     525:"https://zh.wikipedia.org/wiki/%E5%AE%8B%E5%B9%B2%E8%8A%82",
