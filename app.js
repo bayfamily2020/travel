@@ -1,5 +1,6 @@
 const STORAGE_KEY = "world-travel-500-progress-v1";
 const MEDIA_CACHE_KEY = "world-travel-650-media-v30";
+const TRAVELER_AGE_KEY = "world-travel-650-age-v1";
 const $ = (id) => document.getElementById(id);
 let places = [];
 let visited = new Set();
@@ -360,6 +361,33 @@ function descriptionFor(p) {
 
 let shareQrPromise = null;
 
+function travelCompletionEstimate(doneCount){
+  const input=$("traveler-age");
+  const age=Number(input?.value);
+  if(!Number.isFinite(age)||age<22||age>100||doneCount<=0)return null;
+  if(doneCount>=650)return {years:0,short:"已完成",message:"你已经完成全部650项。"};
+  const travelYears=age-21;
+  const yearlyPace=doneCount/travelYears;
+  const years=Math.ceil((650-doneCount)/yearlyPace);
+  return {
+    years,
+    short:`${years}年`,
+    message:`照此速度，还需约${years}年完成全部650项（预计${age+years}岁）。`
+  };
+}
+
+function updateTravelAgeEstimate(doneCount){
+  const output=$("age-estimate");
+  if(!output)return;
+  const input=$("traveler-age");
+  const age=Number(input?.value);
+  const estimate=travelCompletionEstimate(doneCount);
+  if(estimate){output.textContent=estimate.message;return;}
+  if(!input?.value){output.textContent="输入年龄后，按21岁开始旅行估算完成时间。";return;}
+  if(age<22){output.textContent="需要年满22岁，才能按21岁开始旅行计算速度。";return;}
+  output.textContent="先勾选至少一个项目，才能估算旅行速度。";
+}
+
 function roundedRect(ctx,x,y,w,h,r,fill){
   ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();
 }
@@ -387,7 +415,7 @@ async function drawShareCard(score,max,progress,level){
   const done=places.filter(p=>visited.has(p.rank));
   const countryCount=new Set(done.map(p=>String(p.country).split(/\s*[\/(（]/)[0].trim()).filter(Boolean)).size;
   const continentCount=new Set(done.map(p=>p.continent).filter(Boolean)).size;
-  const famousCount=done.filter(p=>p.points===2).length;
+  const completionEstimate=travelCompletionEstimate(done.length);
   ctx.clearRect(0,0,1080,1350);ctx.fillStyle="#173b31";ctx.fillRect(0,0,1080,1350);
   ctx.fillStyle="rgba(221,107,61,.16)";ctx.beginPath();ctx.arc(970,100,300,0,Math.PI*2);ctx.fill();
   ctx.fillStyle="rgba(255,255,255,.04)";for(let x=-100;x<1200;x+=72)for(let y=0;y<1350;y+=72)ctx.fillRect(x+((y/72)%2)*36,y,3,3);
@@ -403,7 +431,7 @@ async function drawShareCard(score,max,progress,level){
   ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText("/ "+max+" 得分",112,606);
   ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="700 76px Georgia";ctx.fillText(progress+"%",968,562);
   ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText("环球完成度",968,606);ctx.textAlign="left";
-  const stats=[["已打卡项目",done.length],["国家／地区",countryCount],["覆盖大洲",continentCount],["经典项目",famousCount]];
+  const stats=[["已打卡项目",done.length],["国家／地区",countryCount],["覆盖大洲",continentCount],["完成650项还需",completionEstimate?.short||"待估算"]];
   stats.forEach(([label,value],i)=>{const x=72+(i%2)*476,y=682+Math.floor(i/2)*158;roundedRect(ctx,x,y,460,136,22,"rgba(255,255,255,.07)");ctx.fillStyle="#fff";ctx.font="700 52px Georgia";ctx.fillText(String(value),x+30,y+70);ctx.fillStyle="#b9cabe";ctx.font="22px sans-serif";ctx.fillText(label,x+30,y+108);});
   roundedRect(ctx,72,1012,250,250,20,"#fff");
   const qr=await getShareQr();if(qr)ctx.drawImage(qr,87,1027,220,220);
@@ -507,6 +535,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     $("reset").addEventListener("click", () => { if(confirm("确定要清空这个浏览器里的全部打卡记录吗？")){visited.clear();save();render();} });
     $("download-card-button")?.addEventListener("click", downloadShareCard);
     $("share-card-button")?.addEventListener("click", shareTravelCard);
+    const ageInput=$("traveler-age");
+    if(ageInput){
+      const savedAge=localStorage.getItem(TRAVELER_AGE_KEY);
+      if(savedAge)ageInput.value=savedAge;
+      ageInput.addEventListener("input",()=>{
+        const age=Number(ageInput.value);
+        if(ageInput.value&&Number.isFinite(age))localStorage.setItem(TRAVELER_AGE_KEY,String(age));
+        else localStorage.removeItem(TRAVELER_AGE_KEY);
+        updateSummary();
+      });
+    }
     render();
   } catch (error) {
     $("grid").innerHTML = '<div class="empty">数据加载失败，请刷新页面重试。</div>';
