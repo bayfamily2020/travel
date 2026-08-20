@@ -30,9 +30,9 @@ function travelDiagnosis(level){
 // intentionally conservative at low completion rates and must not be read as
 // a population survey.
 const chinaTravelPercentileKnots = [
-  [0,0],[1,15],[2,30],[3,42],[5,58],[8,72],[10,80],[15,90],
-  [20,95],[30,98],[40,99.2],[50,99.7],[60,99.9],[70,99.97],
-  [85,99.995],[100,99.999]
+  [0,0],[1,20],[2,38],[3,50],[5,68],[8,84],[10,90],[15,95],
+  [20,97.5],[30,99.2],[40,99.7],[50,99.9],[60,99.97],[70,99.99],
+  [85,99.997],[100,99.999]
 ];
 
 function estimateChinaTravelPercentile(progress){
