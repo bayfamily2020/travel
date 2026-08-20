@@ -53,8 +53,10 @@ function estimateChinaTravelPercentile(progress){
 
 function formatChinaTravelPercentile(progress){
   const value=estimateChinaTravelPercentile(progress);
-  if(value===0)return "0";
-  return value.toFixed(2);
+  if(value<99)return value.toFixed(0);
+  if(value<99.9)return value.toFixed(1);
+  if(value<99.99)return value.toFixed(2);
+  return value.toFixed(3);
 }
 
 // Add the diagnosis to the share card without disturbing the existing card layout.
