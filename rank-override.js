@@ -31,8 +31,8 @@ function travelDiagnosis(level){
 // a population survey.
 const chinaTravelPercentileKnots = [
   [0,0],[1,20],[2,38],[3,50],[5,68],[8,84],[10,90],[15,95],
-  [20,97.5],[30,99.2],[40,99.7],[50,99.9],[60,99.97],[70,99.99],
-  [85,99.997],[100,99.999]
+  [20,96.5],[30,97.2],[40,97.8],[50,98.3],[60,98.75],[70,99.15],
+  [80,99.5],[90,99.8],[100,99.99]
 ];
 
 function estimateChinaTravelPercentile(progress){
@@ -47,8 +47,7 @@ function estimateChinaTravelPercentile(progress){
 
 function formatChinaTravelPercentile(progress){
   const value=estimateChinaTravelPercentile(progress);
-  if(value>=99.99)return value.toFixed(3).replace(/0+$/,'').replace(/\.$/,'');
-  if(value>=99)return value.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+  if(value>=90)return value.toFixed(2);
   return value.toFixed(1).replace(/\.0$/,'');
 }
 
@@ -91,9 +90,12 @@ drawShareCard = async function(score,max,progress,level){
   visibleLines.forEach((l,i)=>ctx.fillText(l,centerX,contentTop+titleHeight+titleGap+28+i*lineHeight));
   const chinaPercentile=formatChinaTravelPercentile(progress);
   ctx.textAlign="right";
-  ctx.fillStyle="#ff9a69";
-  ctx.font='700 18px "Microsoft YaHei",sans-serif';
-  ctx.fillText(`估算超过全球 ${chinaPercentile}% 的华人`,968,632);
+  ctx.fillStyle="#fff";
+  ctx.font='700 72px Georgia,"Microsoft YaHei",sans-serif';
+  ctx.fillText(`${chinaPercentile}%`,1000,105);
+  ctx.fillStyle="#ffb08d";
+  ctx.font='700 21px "Microsoft YaHei",sans-serif';
+  ctx.fillText("超越全球华人",1000,142);
   ctx.textAlign="left";
 };
 
