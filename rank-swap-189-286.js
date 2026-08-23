@@ -1,6 +1,25 @@
 // Swap #189 and #286 content while keeping their new ranking labels.
 // Final state: #189 Ross Ice Shelf = must-go (2 points); #286 Catalan Human Towers = optional (1 point).
 (function () {
+  // Keep destination-specific copy and seasonality with the destination after the rank swap.
+  const baseDescriptionFor = typeof descriptionFor === "function" ? descriptionFor : null;
+  if (baseDescriptionFor) {
+    descriptionFor = function (p) {
+      if (p?.rank === 189) return "世界最大冰架，巨型冰壁延伸数百公里并孕育桌状冰山";
+      if (p?.rank === 286) return "数百名队员以肩膀和双手托起多层人塔，由儿童攀上塔顶完成加泰罗尼亚传统仪式";
+      return baseDescriptionFor(p);
+    };
+  }
+
+  const baseBestMonthsFor = typeof bestMonthsFor === "function" ? bestMonthsFor : null;
+  if (baseBestMonthsFor) {
+    bestMonthsFor = function (p) {
+      if (p?.rank === 189) return [11, 12, 1, 2, 3];
+      if (p?.rank === 286) return [6, 7, 8, 9, 10];
+      return baseBestMonthsFor(p);
+    };
+  }
+
   function applySwap() {
     if (!Array.isArray(places) || places.length < 286) {
       setTimeout(applySwap, 50);
