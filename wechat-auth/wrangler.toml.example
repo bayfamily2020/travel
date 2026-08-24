@@ -1,0 +1,10 @@
+name = "bayfamily-wechat-auth"
+main = "worker.js"
+compatibility_date = "2026-08-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://bayfamily2020.github.io"
+
+[[kv_namespaces]]
+binding = "AUTH_SESSIONS"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
