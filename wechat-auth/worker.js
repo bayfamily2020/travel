@@ -10,6 +10,7 @@ export default {
 
     try {
       if (url.pathname === "/health") return json({ ok: true }, 200, cors);
+      if (url.pathname === "/auth/passphrase" && request.method === "POST") return verifyPassphrase(request, env, cors);
       if (url.pathname === "/auth/challenge" && request.method === "POST") return createChallenge(env, cors);
       if (url.pathname === "/auth/status" && request.method === "GET") return challengeStatus(url, env, cors);
       if (url.pathname === "/wechat/callback" && request.method === "GET") return verifyWechatEndpoint(url, env);
@@ -32,6 +33,43 @@ function corsHeaders(request, env) {
     "access-control-max-age": "86400",
     "vary": "Origin"
   };
+}
+
+async function verifyPassphrase(request, env, cors) {
+  if (!env.ACCESS_PASSPHRASE || !env.LOGIN_SIGNING_SECRET) {
+    return json({ error: "service_not_configured" }, 503, cors);
+  }
+
+  const clientId = request.headers.get("cf-connecting-ip") || "unknown";
+  const rateKey = `passphrase-attempts:${clientId}`;
+  const attempts = Number(await env.AUTH_SESSIONS.get(rateKey) || 0);
+  if (attempts >= 10) return json({ error: "too_many_attempts" }, 429, cors);
+
+  const body = await request.json().catch(() => ({}));
+  const supplied = String(body.passphrase || "").trim();
+  const expected = String(env.ACCESS_PASSPHRASE).trim();
+  if (!supplied || !await constantTimeEqual(supplied, expected)) {
+    await env.AUTH_SESSIONS.put(rateKey, String(attempts + 1), { expirationTtl: 900 });
+    return json({ error: "invalid_passphrase" }, 401, cors);
+  }
+
+  await env.AUTH_SESSIONS.delete(rateKey);
+  const loginToken = randomToken(32);
+  const userId = await stableUserId(loginToken, env.LOGIN_SIGNING_SECRET);
+  await env.AUTH_SESSIONS.put(`login:${loginToken}`, JSON.stringify({ userId, method: "wechat_passphrase" }), { expirationTtl: 2592000 });
+  return json({ loginToken, user: { id: userId, label: "公众号成员" }, expiresIn: 2592000 }, 200, cors);
+}
+
+async function constantTimeEqual(left, right) {
+  const [leftHash, rightHash] = await Promise.all([
+    crypto.subtle.digest("SHA-256", encoder.encode(left)),
+    crypto.subtle.digest("SHA-256", encoder.encode(right))
+  ]);
+  const a = new Uint8Array(leftHash);
+  const b = new Uint8Array(rightHash);
+  let difference = 0;
+  for (let index = 0; index < a.length; index += 1) difference |= a[index] ^ b[index];
+  return difference === 0;
 }
 
 function json(data, status = 200, extra = {}) {
