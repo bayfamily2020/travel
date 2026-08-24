@@ -13,6 +13,8 @@ export default {
       if (url.pathname === "/auth/passphrase" && request.method === "POST") return verifyPassphrase(request, env, cors);
       if (url.pathname === "/plans" && request.method === "GET") return listPlans(env, cors);
       if (url.pathname === "/plans" && request.method === "POST") return createPlan(request, env, cors);
+      if (/^\/plans\/[A-Za-z0-9_-]+$/.test(url.pathname) && request.method === "PATCH") return updatePlan(request, url, env, cors);
+      if (/^\/plans\/[A-Za-z0-9_-]+$/.test(url.pathname) && request.method === "DELETE") return deletePlan(request, url, env, cors);
       if (/^\/plans\/[A-Za-z0-9_-]+\/applications$/.test(url.pathname) && request.method === "POST") return createApplication(request, url, env, cors);
       if (url.pathname === "/me" && request.method === "GET") return getDashboard(request, env, cors);
       if (/^\/applications\/[A-Za-z0-9_-]+\/respond$/.test(url.pathname) && request.method === "POST") return respondToApplication(request, url, env, cors);
@@ -33,7 +35,7 @@ function corsHeaders(request, env) {
   const allowed = (env.ALLOWED_ORIGINS || "https://bayfamily2020.github.io").split(",").map(value => value.trim());
   return {
     "access-control-allow-origin": allowed.includes(origin) ? origin : allowed[0],
-    "access-control-allow-methods": "GET,POST,OPTIONS",
+    "access-control-allow-methods": "GET,POST,PATCH,DELETE,OPTIONS",
     "access-control-allow-headers": "content-type,authorization",
     "access-control-max-age": "86400",
     "vary": "Origin"
@@ -87,6 +89,53 @@ async function createPlan(request, env, cors) {
   return json({ plan: publicPlan(plan) }, 201, cors);
 }
 
+async function updatePlan(request, url, env, cors) {
+  const user = await authenticatedUser(request, env);
+  if (!user) return json({ error: "unauthorized" }, 401, cors);
+  const planId = url.pathname.split("/")[2];
+  const plan = await readJson(env, `plan:${planId}`);
+  if (!plan) return json({ error: "plan_not_found" }, 404, cors);
+  if (plan.ownerId !== user.id) return json({ error: "forbidden" }, 403, cors);
+  const body = await request.json().catch(() => ({}));
+  const updated = {
+    ...plan,
+    nickname: clean(body.nickname, 24), place: clean(body.place, 80),
+    rank: Number.isFinite(Number(body.rank)) ? Number(body.rank) : null,
+    date: clean(body.date, 40), from: clean(body.from, 50), days: clean(body.days, 30),
+    style: clean(body.style, 50), people: clean(body.people, 30), summary: clean(body.summary, 300),
+    wechatId: clean(body.wechatId, 50), email: clean(body.email, 100).toLowerCase(), updatedAt: Date.now()
+  };
+  if (!updated.nickname || !updated.place || !updated.date || !updated.summary || (!updated.wechatId && !updated.email)) return json({ error: "missing_fields" }, 400, cors);
+  if (updated.email && !validEmail(updated.email)) return json({ error: "invalid_email" }, 400, cors);
+  await env.AUTH_SESSIONS.put(`plan:${planId}`, JSON.stringify(updated));
+  return json({ plan: publicPlan(updated, true) }, 200, cors);
+}
+
+async function deletePlan(request, url, env, cors) {
+  const user = await authenticatedUser(request, env);
+  if (!user) return json({ error: "unauthorized" }, 401, cors);
+  const planId = url.pathname.split("/")[2];
+  const plan = await readJson(env, `plan:${planId}`);
+  if (!plan) return json({ error: "plan_not_found" }, 404, cors);
+  if (plan.ownerId !== user.id) return json({ error: "forbidden" }, 403, cors);
+  const applicationIds = await readIndex(env, `planapps:${planId}`);
+  for (const applicationId of applicationIds) {
+    const application = await readJson(env, `application:${applicationId}`);
+    if (application) {
+      await Promise.all([
+        env.AUTH_SESSIONS.delete(`application:${applicationId}`),
+        env.AUTH_SESSIONS.delete(`applied:${planId}:${application.applicantId}`),
+        removeFromIndex(env, `userapps:${application.applicantId}`, applicationId)
+      ]);
+    }
+  }
+  await Promise.all([
+    env.AUTH_SESSIONS.delete(`plan:${planId}`), env.AUTH_SESSIONS.delete(`planapps:${planId}`),
+    removeFromIndex(env, "plans:index", planId), removeFromIndex(env, `userplans:${user.id}`, planId)
+  ]);
+  return json({ deleted: true }, 200, cors);
+}
+
 async function createApplication(request, url, env, cors) {
   const user = await authenticatedUser(request, env);
   if (!user) return json({ error: "unauthorized" }, 401, cors);
@@ -133,7 +182,7 @@ async function getDashboard(request, env, cors) {
     const plan = await readJson(env, `plan:${application.planId}`);
     if (plan) sent.push({ ...safeApplication(application), plan: publicPlan(plan, application.status === "accepted") });
   }
-  return json({ ownPlans: ownPlans.map(plan => publicPlan(plan)), received, sent }, 200, cors);
+  return json({ ownPlans: ownPlans.map(plan => publicPlan(plan, true)), received, sent }, 200, cors);
 }
 
 async function respondToApplication(request, url, env, cors) {
@@ -187,6 +236,11 @@ async function prependIndex(env, key, id, limit) {
   const current = await readIndex(env, key);
   const next = [id, ...current.filter(value => value !== id)].slice(0, limit);
   await env.AUTH_SESSIONS.put(key, JSON.stringify(next));
+}
+
+async function removeFromIndex(env, key, id) {
+  const current = await readIndex(env, key);
+  await env.AUTH_SESSIONS.put(key, JSON.stringify(current.filter(value => value !== id)));
 }
 
 async function verifyPassphrase(request, env, cors) {
