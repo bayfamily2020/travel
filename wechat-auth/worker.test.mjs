@@ -30,6 +30,9 @@ const ownerToken = ownerLogin.body.loginToken;
 const created = await call("/plans", { method:"POST", token:ownerToken, body:{ nickname:"发起人", place:"冰岛", date:"2027年7月", from:"上海", days:"8天", style:"自驾", people:"4人", summary:"环岛旅行", wechatId:"owner-wechat", email:"owner@example.com" } });
 assert.equal(created.status, 201);
 const planId = created.body.plan.id;
+const edited = await call(`/plans/${planId}`, { method:"PATCH", token:ownerToken, body:{ nickname:"发起人", place:"冰岛环岛", date:"2027年7月", from:"上海", days:"9天", style:"自驾", people:"4人", summary:"更新后的环岛旅行", wechatId:"owner-wechat", email:"owner@example.com" } });
+assert.equal(edited.status, 200);
+assert.equal(edited.body.plan.place, "冰岛环岛");
 const publicPlans = (await call("/plans")).body.plans;
 assert.equal(publicPlans.length, 1);
 assert.equal(publicPlans[0].wechatId, undefined);
@@ -38,6 +41,8 @@ assert.equal(publicPlans[0].contact, undefined);
 
 const applicantLogin = await call("/auth/passphrase", { method:"POST", body:{ passphrase:"test-passphrase" } });
 const applicantToken = applicantLogin.body.loginToken;
+assert.equal((await call(`/plans/${planId}`, { method:"PATCH", token:applicantToken, body:{} })).status, 403);
+assert.equal((await call(`/plans/${planId}`, { method:"DELETE", token:applicantToken })).status, 403);
 const applied = await call(`/plans/${planId}/applications`, { method:"POST", token:applicantToken, body:{ nickname:"申请人", message:"有冬季自驾经验", wechatId:"applicant-wechat", email:"applicant@example.com" } });
 assert.equal(applied.status, 201);
 
@@ -50,5 +55,8 @@ const applicantDashboard = await call("/me", { token:applicantToken });
 assert.equal(applicantDashboard.body.sent[0].status, "accepted");
 assert.equal(applicantDashboard.body.sent[0].plan.contact.wechatId, "owner-wechat");
 assert.equal((await call("/me", { token:ownerToken })).body.received[0].contact.email, "applicant@example.com");
+
+assert.equal((await call(`/plans/${planId}`, { method:"DELETE", token:ownerToken })).status, 200);
+assert.equal((await call("/plans")).body.plans.length, 0);
 
 console.log("worker flow ok");
