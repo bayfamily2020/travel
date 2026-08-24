@@ -37,7 +37,7 @@
   function renderPlans() { const list = $("companion-plan-list"); if (list) list.innerHTML = plans.length ? plans.map(p => planMarkup(p)).join("") : samplePlans.map(p => planMarkup(p, true)).join(""); }
   async function loadPlans() {
     try { const result = await api("/plans"); plans = Array.isArray(result.plans) ? result.plans : []; renderPlans(); }
-    catch (_) { const list = $("companion-plan-list"); if (list) list.innerHTML = `<div class="companion-error">暂时无法读取结伴计划，请稍后刷新。</div>`; }
+    catch (_) { plans = []; renderPlans(); }
   }
 
   function enhanceCards() {
