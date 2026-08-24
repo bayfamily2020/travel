@@ -1,5 +1,5 @@
 (() => {
-  const WECHAT_AUTH_URL = "";
+  const WECHAT_APP_ID = "wx043cc038eed3bd32";\n  const WECHAT_AUTH_URL = "";
   const samplePlans = [
     { rank: 594, place: "勃朗峰环线", date: "2027年6月", from: "旧金山湾区", days: "10天", style: "徒步 · 摄影", people: "计划6–10人", summary: "完整体验TMB经典路段，适合有连续徒步经验的旅行者。" },
     { rank: 648, place: "挪威峡湾", date: "2027年6月", from: "旧金山湾区", days: "10天", style: "徒步 · 自驾", people: "计划6–10人", summary: "串联三大岩石与峡湾公路，时间可在六月下旬协调。" },
@@ -100,7 +100,7 @@
       location.href = `${WECHAT_AUTH_URL}${WECHAT_AUTH_URL.includes("?") ? "&" : "?"}next=${next}`;
       return;
     }
-    if (status) status.textContent = "界面已经就绪。接入公众号 AppID、授权域名和服务器回调后，这里会直接进入微信授权。";
+    if (status) status.textContent = "界面已经就绪。当前公众号 AppID 已登记。接入授权域名和服务器回调后，这里会直接进入微信授权。";
   }
 
   document.addEventListener("click", event => {
