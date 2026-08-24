@@ -45,7 +45,7 @@
       <div class="companion-dialog-inner">
         <button class="dialog-close" type="button" data-close-dialog aria-label="关闭">×</button>
         <h2 id="destination-companion-title">寻找旅行同伴</h2>
-        <p class="dialog-note">所有人都可以浏览计划；申请同行和发起新计划需要微信登录。</p>
+        <p class="dialog-note">所有人都可以浏览计划；申请同行和发起新计划需要公众号口令验证。</p>
         <div class="companion-plan-list" id="destination-companion-body"></div>
       </div>
     </dialog>
@@ -53,19 +53,22 @@
       <div class="companion-dialog-inner wechat-login-box">
         <button class="dialog-close" type="button" data-close-dialog aria-label="关闭">×</button>
         <img class="wechat-account-qr" src="./assets/bayfamily-wechat-qrcode.jpg?v=20260824" alt="BayFamily公众号二维码">
-        <h2 id="wechat-login-title">使用微信确认身份</h2>
-        <p class="dialog-note" id="wechat-login-context">完成公众号验证码后才可以使用结伴功能。</p>
-        <ul><li>旅行内容和公开计划仍可自由浏览</li><li>只有发布、申请和回复需要登录</li><li>双方确认前不会显示微信号等联系方式</li></ul>
-        <button class="wechat-login-button" id="wechat-login-button" type="button">获取公众号验证码</button>
-        <div class="wechat-code-panel" id="wechat-code-panel" hidden><span>发送下面的完整验证码</span><strong id="wechat-login-code">TRAVEL-XXXXXX</strong><small>打开微信 → 搜索并进入 BayFamily 公众号 → 发送验证码</small></div>
+        <h2 id="wechat-login-title">使用公众号口令进入</h2>
+        <p class="dialog-note" id="wechat-login-context">获取公众号口令后才可以使用结伴功能。</p>
+        <ul><li>旅行内容和公开计划仍可自由浏览</li><li>微信扫码关注 BayFamily，发送“结伴旅行”获取口令</li><li>只有发布、申请和回复需要验证</li><li>双方确认前不会显示微信号等联系方式</li></ul>
+        <form class="wechat-passphrase-form" id="wechat-passphrase-form">
+          <label for="wechat-passphrase">公众号回复的访问口令</label>
+          <input id="wechat-passphrase" name="passphrase" type="text" inputmode="text" autocomplete="one-time-code" maxlength="64" placeholder="请输入访问口令" required>
+          <button class="wechat-login-button" id="wechat-login-button" type="submit">验证口令</button>
+        </form>
         <span class="wechat-login-status" id="wechat-login-status" aria-live="polite"></span>
-        <p class="privacy-note">网站不会要求或保存你的微信密码。</p>
+        <p class="privacy-note">网站不会要求你的微信密码，也不会读取微信个人资料。</p>
       </div>
     </dialog>
     <footer><span>环球旅行达人测评</span><p>前500项参考 Lonely Planet Ultimate Travel List；另增150项全球节庆、朝圣徒步与代表性体验。此生必去每项2分，不去也行每项1分；数据只保存在你的浏览器中。全球华人旅行排名根据中国内地公开出境人次与项目难度估算，仅供娱乐，并非人口抽样调查。</p><a class="visitor-counter" href="https://hits.sh/bayfamily2020.github.io/travel/" target="_blank" rel="noopener" aria-label="查看网站累计访问统计"><img src="https://hits.sh/bayfamily2020.github.io/travel.svg?style=flat-square&amp;label=%E7%B4%AF%E8%AE%A1%E8%AE%BF%E9%97%AE&amp;color=dd6b3d&amp;labelColor=1f4b3b" alt="网站累计访问次数"></a></footer>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
-  <script src="./travelog-links.js?v=20260819-1325" defer></script>\n  <script src="./companion.js?v=20260824-v1" defer></script>
+  <script src="./travelog-links.js?v=20260819-1325" defer></script>\n  <script src="./companion.js?v=20260824-passphrase-v1" defer></script>
   <script src="./app.js?v=20260820-weakest-category" defer></script>
   <script src="./continent-override.js?v=20260819-1325" defer></script>
   <script src="./experience-override.js?v=20260819-625" defer></script>
