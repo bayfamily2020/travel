@@ -1,5 +1,6 @@
 (() => {
   const API = "https://bayfamily-wechat-login.bayfamily2020.workers.dev";
+  const PUBLIC_PLAN_CUTOFF = 1787608379000;
   const samplePlans = [
     { rank: 594, place: "勃朗峰环线", date: "2027年6月", from: "旧金山湾区", days: "10天", style: "徒步 · 摄影", people: "计划6–10人", summary: "完整体验TMB经典路段，适合有连续徒步经验的旅行者。" },
     { rank: 648, place: "挪威峡湾", date: "2027年6月", from: "旧金山湾区", days: "10天", style: "徒步 · 自驾", people: "计划6–10人", summary: "串联三大岩石与峡湾公路，时间可在六月下旬协调。" },
@@ -42,7 +43,7 @@
   }
   function renderPlans() { const list = $("companion-plan-list"); if (list) list.innerHTML = plans.length ? plans.map(p => planMarkup(p)).join("") : samplePlans.map(p => planMarkup(p, true)).join(""); }
   async function loadPlans() {
-    try { const result = await api("/plans"); plans = Array.isArray(result.plans) ? result.plans : []; renderPlans(); enhanceCards(); }
+    try { const result = await api("/plans"); plans = Array.isArray(result.plans) ? result.plans.filter(plan => Number(plan.createdAt) >= PUBLIC_PLAN_CUTOFF) : []; renderPlans(); enhanceCards(); }
     catch (_) { plans = []; renderPlans(); enhanceCards(); }
   }
 
