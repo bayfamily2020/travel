@@ -1,6 +1,5 @@
 (() => {
   const API = "https://bayfamily-wechat-login.bayfamily2020.workers.dev";
-  const LOGIN_KEY = "bayfamily-wechat-login-v1";
   const samplePlans = [
     { rank: 594, place: "勃朗峰环线", date: "2027年6月", from: "旧金山湾区", days: "10天", style: "徒步 · 摄影", people: "计划6–10人", summary: "完整体验TMB经典路段，适合有连续徒步经验的旅行者。" },
     { rank: 648, place: "挪威峡湾", date: "2027年6月", from: "旧金山湾区", days: "10天", style: "徒步 · 自驾", people: "计划6–10人", summary: "串联三大岩石与峡湾公路，时间可在六月下旬协调。" },
@@ -9,19 +8,26 @@
   let plans = [], pendingAction = null;
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
-  function login() { try { return JSON.parse(localStorage.getItem(LOGIN_KEY) || "null"); } catch (_) { return null; } }
+  const isSignedIn = () => Boolean(window.Clerk?.user && window.Clerk?.session);
+  function updateAccountButton() {
+    const button = $("clerk-account-button");
+    if (!button) return;
+    const email = window.Clerk?.user?.primaryEmailAddress?.emailAddress || "";
+    button.textContent = isSignedIn() ? (email || "账户") : "邮箱登录";
+    button.title = isSignedIn() ? "管理账户或退出登录" : "使用邮箱验证码登录";
+  }
 
   async function api(path, options = {}, needsLogin = false) {
     const headers = { "content-type":"application/json", ...(options.headers || {}) };
     if (needsLogin) {
-      const token = login()?.token;
+      const token = await window.Clerk?.session?.getToken();
       if (!token) throw new Error("unauthorized");
       headers.authorization = `Bearer ${token}`;
     }
     const response = await fetch(`${API}${path}`, { ...options, headers });
     const result = await response.json().catch(() => ({}));
     if (response.status === 401 && needsLogin) {
-      localStorage.removeItem(LOGIN_KEY); document.documentElement.classList.remove("wechat-verified");
+      document.documentElement.classList.remove("clerk-verified");
       throw new Error("unauthorized");
     }
     if (!response.ok) { const error = new Error(result.error || "request_failed"); error.status = response.status; throw error; }
@@ -61,11 +67,10 @@
 
   function requireLogin(action) {
     pendingAction = action; closeDialog($("destination-companion-dialog"));
-    const verb = action.type === "publish" ? "发布结伴计划" : action.type === "dashboard" ? "查看我的结伴" : "申请同行";
-    $("wechat-login-context").textContent = action.place ? `你正在为“${action.place}”${verb}。` : `通过公众号口令验证后才可以${verb}。`;
-    $("wechat-login-status").textContent = ""; openDialog($("wechat-login-dialog"));
+    if (!window.Clerk) return alert("登录组件仍在加载，请稍后再试。");
+    window.Clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
   }
-  function runAction(action) { if (!login()?.token) return requireLogin(action); if (action.type === "publish") return openPublish(action); if (action.type === "apply") return openApply(action); if (action.type === "dashboard") return openDashboard(); }
+  function runAction(action) { if (!isSignedIn()) return requireLogin(action); if (action.type === "publish") return openPublish(action); if (action.type === "apply") return openApply(action); if (action.type === "dashboard") return openDashboard(); }
   function openPublish(action) {
     closeDialog($("destination-companion-dialog")); const form = $("publish-plan-form"); form.reset();
     form.elements.place.value = action.place || ""; form.elements.rank.value = action.rank || "";
@@ -92,17 +97,6 @@
     $("apply-plan-context").textContent = `申请加入“${action.place}”结伴计划。联系方式暂不公开。`; $("apply-plan-status").textContent = ""; openDialog($("apply-plan-dialog"));
   }
 
-  async function verifyPassphrase(event) {
-    event.preventDefault(); const status = $("wechat-login-status"), button = $("wechat-login-button"), input = $("wechat-passphrase"), passphrase = input.value.trim();
-    if (!passphrase) { status.textContent = "请先输入公众号回复的访问口令。"; return input.focus(); }
-    button.disabled = true; status.textContent = "正在验证口令…";
-    try {
-      const result = await api("/auth/passphrase", { method:"POST", body:JSON.stringify({ passphrase }) });
-      localStorage.setItem(LOGIN_KEY, JSON.stringify({ token:result.loginToken, user:result.user, savedAt:Date.now() })); document.documentElement.classList.add("wechat-verified"); input.value = ""; status.textContent = "口令验证成功…";
-      const next = pendingAction; pendingAction = null; setTimeout(() => { closeDialog($("wechat-login-dialog")); if (next) runAction(next); }, 450);
-    } catch (error) { status.textContent = error.status === 429 ? "尝试次数过多，请15分钟后再试。" : "口令不正确或服务暂时不可用。"; input.select(); }
-    finally { button.disabled = false; }
-  }
   async function submitPlan(event) {
     event.preventDefault(); const form = event.currentTarget, button = form.querySelector("button[type=submit]"), status = $("publish-plan-status"), body = Object.fromEntries(new FormData(form).entries());
     button.disabled = true; status.textContent = "正在发布…";
@@ -145,10 +139,30 @@
     const remove = event.target.closest("[data-delete-plan]"); if (remove) return deletePlan(remove.dataset.deletePlan, remove.dataset.planName, remove);
     const close = event.target.closest("[data-close-dialog]"); if (close) closeDialog(close.closest("dialog"));
   });
-  document.addEventListener("DOMContentLoaded", () => {
-    if (login()?.token) document.documentElement.classList.add("wechat-verified"); renderPlans(); loadPlans(); enhanceCards();
+  async function initializeClerk() {
+    for (let attempt = 0; attempt < 100 && !window.Clerk; attempt += 1) await new Promise(resolve => setTimeout(resolve, 100));
+    if (!window.Clerk) return;
+    await window.Clerk.load();
+    let previouslySignedIn = isSignedIn();
+    document.documentElement.classList.toggle("clerk-verified", previouslySignedIn);
+    updateAccountButton();
+    window.Clerk.addListener(({ user, session }) => {
+      const signedIn = Boolean(user && session);
+      document.documentElement.classList.toggle("clerk-verified", signedIn);
+      updateAccountButton();
+      if (signedIn && !previouslySignedIn && pendingAction) {
+        const next = pendingAction; pendingAction = null;
+        window.Clerk.closeSignIn(); runAction(next);
+      }
+      previouslySignedIn = signedIn;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    renderPlans(); loadPlans(); enhanceCards(); await initializeClerk();
     const grid = $("grid"); if (grid) new MutationObserver(enhanceCards).observe(grid, { childList:true });
-    $("wechat-passphrase-form")?.addEventListener("submit", verifyPassphrase); $("publish-plan-form")?.addEventListener("submit", submitPlan); $("apply-plan-form")?.addEventListener("submit", submitApplication); $("open-companion-dashboard")?.addEventListener("click", () => runAction({ type:"dashboard" }));
+    $("publish-plan-form")?.addEventListener("submit", submitPlan); $("apply-plan-form")?.addEventListener("submit", submitApplication); $("open-companion-dashboard")?.addEventListener("click", () => runAction({ type:"dashboard" }));
+    $("clerk-account-button")?.addEventListener("click", () => isSignedIn() ? window.Clerk.openUserProfile() : window.Clerk.openSignIn({ afterSignInUrl:window.location.href, afterSignUpUrl:window.location.href }));
     document.querySelectorAll("dialog").forEach(dialog => dialog.addEventListener("click", event => { if (event.target === dialog) closeDialog(dialog); }));
   });
 })();
