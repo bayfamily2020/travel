@@ -1,8 +1,6 @@
 (() => {
-  const WECHAT_APP_ID = "wx043cc038eed3bd32";
   const WECHAT_AUTH_API = "https://bayfamily-wechat-login.bayfamily2020.workers.dev";
   const LOGIN_STORAGE_KEY = "bayfamily-wechat-login-v1";
-  let loginPollTimer = null;
   const samplePlans = [
     { rank: 594, place: "勃朗峰环线", date: "2027年6月", from: "旧金山湾区", days: "10天", style: "徒步 · 摄影", people: "计划6–10人", summary: "完整体验TMB经典路段，适合有连续徒步经验的旅行者。" },
     { rank: 648, place: "挪威峡湾", date: "2027年6月", from: "旧金山湾区", days: "10天", style: "徒步 · 自驾", people: "计划6–10人", summary: "串联三大岩石与峡湾公路，时间可在六月下旬协调。" },
@@ -89,67 +87,56 @@
     const context = $("wechat-login-context");
     if (context) {
       const verb = action === "publish" ? "发布结伴计划" : action === "reply" ? "回复同行申请" : "申请同行";
-      context.textContent = place ? `你正在为“${place}”${verb}。` : `微信登录后才可以${verb}。`;
+      context.textContent = place ? `你正在为“${place}”${verb}。` : `通过公众号口令验证后才可以${verb}。`;
     }
     const status = $("wechat-login-status");
     if (status) status.textContent = "";
     openDialog(dialog);
   }
 
-  async function startWechatLogin() {
+  async function verifyPassphrase(event) {
+    event?.preventDefault();
     const status = $("wechat-login-status");
     const button = $("wechat-login-button");
+    const input = $("wechat-passphrase");
+    const passphrase = input?.value.trim() || "";
     if (!WECHAT_AUTH_API) {
-      if (status) status.textContent = "验证码后台已经准备好，发布消息接收服务后即可启用。";
+      if (status) status.textContent = "口令验证服务尚未配置。";
+      return;
+    }
+    if (!passphrase) {
+      if (status) status.textContent = "请先输入公众号回复的访问口令。";
+      input?.focus();
       return;
     }
     if (button) button.disabled = true;
-    if (status) status.textContent = "正在生成一次性验证码…";
+    if (status) status.textContent = "正在验证口令…";
     try {
-      const response = await fetch(`${WECHAT_AUTH_API}/auth/challenge`, { method: "POST", headers: {"content-type":"application/json"} });
-      if (!response.ok) throw new Error("challenge_failed");
-      const challenge = await response.json();
-      showChallenge(challenge);
-      pollLogin(challenge.sessionId, Date.now() + challenge.expiresIn * 1000);
+      const response = await fetch(`${WECHAT_AUTH_API}/auth/passphrase`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ passphrase })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (response.status === 429) {
+        if (status) status.textContent = "尝试次数过多，请15分钟后再试。";
+        return;
+      }
+      if (!response.ok || !result.loginToken) {
+        if (status) status.textContent = "口令不正确，请查看公众号的最新回复。";
+        input?.select();
+        return;
+      }
+      localStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify({ token: result.loginToken, user: result.user, savedAt: Date.now() }));
+      if (status) status.textContent = "口令验证成功，正在返回结伴功能…";
+      document.documentElement.classList.add("wechat-verified");
+      if (input) input.value = "";
+      setTimeout(() => closeDialog($("wechat-login-dialog")), 700);
     } catch (_) {
-      if (status) status.textContent = "暂时无法连接微信验证服务，请稍后重试。";
+      if (status) status.textContent = "暂时无法连接口令验证服务，请稍后重试。";
     } finally {
       if (button) button.disabled = false;
     }
-  }
-
-  function showChallenge(challenge) {
-    const panel = $("wechat-code-panel");
-    const code = $("wechat-login-code");
-    const status = $("wechat-login-status");
-    if (panel) panel.hidden = false;
-    if (code) code.textContent = challenge.code;
-    if (status) status.textContent = "请在5分钟内向 BayFamily 公众号发送上面的完整验证码。";
-  }
-
-  function pollLogin(sessionId, expiresAt) {
-    clearTimeout(loginPollTimer);
-    const check = async () => {
-      if (Date.now() >= expiresAt) {
-        const status = $("wechat-login-status");
-        if (status) status.textContent = "验证码已经过期，请重新获取。";
-        return;
-      }
-      try {
-        const response = await fetch(`${WECHAT_AUTH_API}/auth/status?session=${encodeURIComponent(sessionId)}`, {cache:"no-store"});
-        const result = await response.json();
-        if (result.status === "verified" && result.loginToken) {
-          localStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify({ token: result.loginToken, user: result.user, savedAt: Date.now() }));
-          const status = $("wechat-login-status");
-          if (status) status.textContent = "微信身份验证成功，正在返回结伴功能…";
-          document.documentElement.classList.add("wechat-verified");
-          setTimeout(() => closeDialog($("wechat-login-dialog")), 900);
-          return;
-        }
-      } catch (_) {}
-      loginPollTimer = setTimeout(check, 1800);
-    };
-    check();
   }
 
   document.addEventListener("click", event => {
@@ -170,7 +157,7 @@
     try { if (JSON.parse(localStorage.getItem(LOGIN_STORAGE_KEY) || "null")?.token) document.documentElement.classList.add("wechat-verified"); } catch (_) {}
     const grid = $("grid");
     if (grid) new MutationObserver(enhanceCards).observe(grid, {childList:true});
-    $("wechat-login-button")?.addEventListener("click", startWechatLogin);
+    $("wechat-passphrase-form")?.addEventListener("submit", verifyPassphrase);
     document.querySelectorAll("dialog").forEach(dialog => {
       dialog.addEventListener("click", event => {
         if (event.target === dialog) closeDialog(dialog);
