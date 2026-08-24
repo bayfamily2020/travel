@@ -52,7 +52,7 @@ async function authenticatedUser(request, env) {
 async function listPlans(env, cors) {
   const ids = await readIndex(env, "plans:index");
   const records = await Promise.all(ids.slice(0, 60).map(id => env.AUTH_SESSIONS.get(`plan:${id}`)));
-  const plans = records.filter(Boolean).map(JSON.parse).filter(plan => plan.status === "open").map(publicPlan);
+  const plans = records.filter(Boolean).map(JSON.parse).filter(plan => plan.status === "open").map(plan => publicPlan(plan));
   return json({ plans }, 200, cors);
 }
 
@@ -72,10 +72,13 @@ async function createPlan(request, env, cors) {
     style: clean(body.style, 50),
     people: clean(body.people, 30),
     summary: clean(body.summary, 300),
+    wechatId: clean(body.wechatId, 50),
+    email: clean(body.email, 100).toLowerCase(),
     createdAt: Date.now(),
     status: "open"
   };
-  if (!plan.nickname || !plan.place || !plan.date || !plan.summary) return json({ error: "missing_fields" }, 400, cors);
+  if (!plan.nickname || !plan.place || !plan.date || !plan.summary || (!plan.wechatId && !plan.email)) return json({ error: "missing_fields" }, 400, cors);
+  if (plan.email && !validEmail(plan.email)) return json({ error: "invalid_email" }, 400, cors);
   await env.AUTH_SESSIONS.put(`plan:${plan.id}`, JSON.stringify(plan));
   await Promise.all([
     prependIndex(env, "plans:index", plan.id, 100),
@@ -97,9 +100,12 @@ async function createApplication(request, url, env, cors) {
     id: randomToken(9), planId, applicantId: user.id,
     nickname: clean(body.nickname, 24),
     message: clean(body.message, 300),
+    wechatId: clean(body.wechatId, 50),
+    email: clean(body.email, 100).toLowerCase(),
     createdAt: Date.now(), status: "pending"
   };
-  if (!application.nickname || !application.message) return json({ error: "missing_fields" }, 400, cors);
+  if (!application.nickname || !application.message || (!application.wechatId && !application.email)) return json({ error: "missing_fields" }, 400, cors);
+  if (application.email && !validEmail(application.email)) return json({ error: "invalid_email" }, 400, cors);
   await Promise.all([
     env.AUTH_SESSIONS.put(`application:${application.id}`, JSON.stringify(application)),
     env.AUTH_SESSIONS.put(`applied:${planId}:${user.id}`, application.id),
@@ -117,7 +123,7 @@ async function getDashboard(request, env, cors) {
   const received = [];
   for (const plan of ownPlans) {
     const appIds = await readIndex(env, `planapps:${plan.id}`);
-    const apps = (await Promise.all(appIds.map(id => readJson(env, `application:${id}`)))).filter(Boolean).map(safeApplication);
+    const apps = (await Promise.all(appIds.map(id => readJson(env, `application:${id}`)))).filter(Boolean).map(application => safeApplication(application, application.status === "accepted"));
     received.push(...apps.map(application => ({ ...application, plan: publicPlan(plan) })));
   }
   const sentIds = await readIndex(env, `userapps:${user.id}`);
@@ -125,9 +131,9 @@ async function getDashboard(request, env, cors) {
   const sent = [];
   for (const application of sentRaw) {
     const plan = await readJson(env, `plan:${application.planId}`);
-    if (plan) sent.push({ ...safeApplication(application), plan: publicPlan(plan) });
+    if (plan) sent.push({ ...safeApplication(application), plan: publicPlan(plan, application.status === "accepted") });
   }
-  return json({ ownPlans: ownPlans.map(publicPlan), received, sent }, 200, cors);
+  return json({ ownPlans: ownPlans.map(plan => publicPlan(plan)), received, sent }, 200, cors);
 }
 
 async function respondToApplication(request, url, env, cors) {
@@ -144,21 +150,27 @@ async function respondToApplication(request, url, env, cors) {
   application.status = decision;
   application.respondedAt = Date.now();
   await env.AUTH_SESSIONS.put(`application:${application.id}`, JSON.stringify(application));
-  return json({ application: safeApplication(application) }, 200, cors);
+  return json({ application: safeApplication(application, decision === "accepted") }, 200, cors);
 }
 
-function publicPlan(plan) {
-  const { ownerId, ...safe } = plan;
+function publicPlan(plan, includeContact = false) {
+  const { ownerId, wechatId, email, ...safe } = plan;
+  if (includeContact) safe.contact = { wechatId, email };
   return safe;
 }
 
-function safeApplication(application) {
-  const { applicantId, ...safe } = application;
+function safeApplication(application, includeContact = false) {
+  const { applicantId, wechatId, email, ...safe } = application;
+  if (includeContact) safe.contact = { wechatId, email };
   return safe;
 }
 
 function clean(value, maxLength) {
   return String(value || "").trim().replace(/[\u0000-\u001F\u007F]/g, " ").slice(0, maxLength);
+}
+
+function validEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 async function readJson(env, key) {
