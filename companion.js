@@ -60,6 +60,22 @@
       link.textContent = count ? `🤝 ${count}个结伴计划` : "🤝 找同伴";
     });
   }
+  function populatePlaceChoices() {
+    const select = $("publish-place-choice"), entries = window.BAYFAMILY_TRAVEL_PLACES;
+    if (!select || !Array.isArray(entries) || !entries.length) return;
+    const current = select.value;
+    select.innerHTML = `<option value="">请选择清单目的地</option>${entries.slice().sort((a,b) => a.rank-b.rank).map(item => `<option value="${esc(item.rank)}" data-name="${esc(item.name)}">#${String(item.rank).padStart(3,"0")} ${esc(item.name)}</option>`).join("")}<option value="other">其他（Others）</option>`;
+    if ([...select.options].some(option => option.value === current)) select.value = current;
+    syncPlaceChoice();
+  }
+  function syncPlaceChoice() {
+    const form = $("publish-plan-form"), select = $("publish-place-choice"), otherField = $("publish-other-place-field");
+    if (!form || !select || !otherField) return;
+    const otherInput = form.elements.otherPlace, isOther = select.value === "other";
+    otherField.hidden = !isOther; otherInput.required = isOther;
+    form.elements.rank.value = isOther ? "" : select.value;
+    form.elements.place.value = isOther ? otherInput.value.trim() : (select.selectedOptions[0]?.dataset.name || "");
+  }
   function openDialog(dialog) { if (!dialog) return; document.body.classList.add("dialog-open"); typeof dialog.showModal === "function" ? dialog.showModal() : dialog.setAttribute("open",""); }
   function closeDialog(dialog) { if (!dialog) return; document.body.classList.remove("dialog-open"); typeof dialog.close === "function" ? dialog.close() : dialog.removeAttribute("open"); }
   function openDestination(rank, name) {
@@ -77,7 +93,9 @@
   function runAction(action) { if (!isSignedIn()) return requireLogin(action); if (action.type === "publish") return openPublish(action); if (action.type === "apply") return openApply(action); if (action.type === "dashboard") return openDashboard(); }
   function openPublish(action) {
     closeDialog($("destination-companion-dialog")); const form = $("publish-plan-form"); form.reset();
-    form.elements.place.value = action.place || ""; form.elements.rank.value = action.rank || "";
+    populatePlaceChoices();
+    if (action.rank && [...form.elements.placeChoice.options].some(option => option.value === String(action.rank))) form.elements.placeChoice.value = String(action.rank);
+    syncPlaceChoice();
     $("publish-plan-title").textContent = "发布结伴计划"; form.querySelector("button[type=submit]").textContent = "发布计划";
     $("publish-plan-status").textContent = ""; openDialog($("publish-plan-dialog"));
   }
@@ -92,8 +110,11 @@
     }
     if (!plan) return;
     closeDialog($("companion-dashboard-dialog")); const form = $("publish-plan-form"); form.reset();
-    for (const name of ["nickname","place","rank","date","from","days","people","style","summary"]) if (form.elements[name]) form.elements[name].value = plan[name] ?? "";
-    form.elements.planId.value = plan.id; form.elements.wechatId.value = plan.contact?.wechatId || ""; form.elements.email.value = plan.contact?.email || "";
+    for (const name of ["nickname","date","from","days","people","style","summary"]) if (form.elements[name]) form.elements[name].value = plan[name] ?? "";
+    populatePlaceChoices();
+    const listed = plan.rank && [...form.elements.placeChoice.options].some(option => option.value === String(plan.rank));
+    form.elements.placeChoice.value = listed ? String(plan.rank) : "other"; form.elements.otherPlace.value = listed ? "" : plan.place;
+    syncPlaceChoice(); form.elements.planId.value = plan.id; form.elements.wechatId.value = plan.contact?.wechatId || ""; form.elements.email.value = plan.contact?.email || "";
     $("publish-plan-title").textContent = "编辑结伴计划"; form.querySelector("button[type=submit]").textContent = "保存修改"; $("publish-plan-status").textContent = ""; openDialog($("publish-plan-dialog"));
   }
   function openApply(action) {
@@ -102,9 +123,9 @@
   }
 
   async function submitPlan(event) {
-    event.preventDefault(); const form = event.currentTarget, button = form.querySelector("button[type=submit]"), status = $("publish-plan-status"), body = Object.fromEntries(new FormData(form).entries());
+    event.preventDefault(); syncPlaceChoice(); const form = event.currentTarget, button = form.querySelector("button[type=submit]"), status = $("publish-plan-status"), body = Object.fromEntries(new FormData(form).entries());
     button.disabled = true; status.textContent = "正在发布…";
-    const planId = body.planId; delete body.planId;
+    const planId = body.planId; delete body.planId; delete body.placeChoice; delete body.otherPlace;
     try { await api(planId ? `/plans/${encodeURIComponent(planId)}` : "/plans", { method:planId ? "PATCH" : "POST", body:JSON.stringify(body) }, true); status.textContent = planId ? "修改已保存。" : "发布成功。"; await loadPlans(); setTimeout(() => closeDialog($("publish-plan-dialog")), 650); }
     catch (error) { status.textContent = error.message === "unauthorized" ? "登录已过期，请重新验证。" : "发布失败，请检查必填项。"; } finally { button.disabled = false; }
   }
@@ -167,7 +188,9 @@
     const grid = $("grid"); if (grid) new MutationObserver(enhanceCards).observe(grid, { childList:true });
     $("publish-plan-form")?.addEventListener("submit", submitPlan); $("apply-plan-form")?.addEventListener("submit", submitApplication); $("open-companion-dashboard")?.addEventListener("click", () => runAction({ type:"dashboard" }));
     $("clerk-account-button")?.addEventListener("click", () => isSignedIn() ? window.Clerk.openUserProfile() : window.Clerk.openSignIn({ afterSignInUrl:window.location.href, afterSignUpUrl:window.location.href }));
+    $("publish-place-choice")?.addEventListener("change", syncPlaceChoice); $("publish-plan-form")?.elements.otherPlace?.addEventListener("input", syncPlaceChoice);
     document.querySelectorAll("dialog").forEach(dialog => dialog.addEventListener("click", event => { if (event.target === dialog) closeDialog(dialog); }));
     await initializeClerk();
   });
+  document.addEventListener("bayfamily:places-ready", populatePlaceChoices);
 })();
