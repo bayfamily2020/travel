@@ -6,7 +6,7 @@
   <meta name="description" content="650项环球旅行达成度测试：勾选你的旅行足迹，测出自己的旅行段位。" />
   <title>环球旅行达成度测试</title>
   <link rel="stylesheet" href="./style.css?v=20260819-1325" />
-  <link rel="stylesheet" href="./level.css?v=20260820-weakest-category" />\n  <link rel="stylesheet" href="./companion.css?v=20260824-v1" />
+  <link rel="stylesheet" href="./level.css?v=20260820-weakest-category" />\n  <link rel="stylesheet" href="./companion.css?v=20260824-mvp-v1" />
   <style>
     @media (max-width:580px){
       .place-card,.place-card.with-image{min-height:0!important;height:auto!important;justify-content:flex-start!important;}
@@ -26,7 +26,7 @@
     <section class="companion-section" id="companions" aria-labelledby="companion-title">
       <div class="companion-section-head">
         <div><span class="kicker">FIND YOUR CREW / 寻找同路人</span><h2 id="companion-title">下一段路，不必一个人走</h2><p>结伴计划公开可看。发布计划、申请同行和回复消息时，需要使用微信确认身份；双方同意前不会公开联系方式。</p></div>
-        <button class="wechat-required" type="button" data-action="publish">＋ 发布结伴计划</button>
+        <div class="companion-head-actions"><button class="companion-dashboard-button" type="button" id="open-companion-dashboard">我的结伴</button><button class="wechat-required" type="button" data-action="publish">＋ 发布结伴计划</button></div>
       </div>
       <div class="companion-plan-list" id="companion-plan-list" aria-live="polite"></div>
     </section>
@@ -49,6 +49,36 @@
         <div class="companion-plan-list" id="destination-companion-body"></div>
       </div>
     </dialog>
+    <dialog class="companion-dialog" id="publish-plan-dialog" aria-labelledby="publish-plan-title">
+      <div class="companion-dialog-inner">
+        <button class="dialog-close" type="button" data-close-dialog aria-label="关闭">×</button>
+        <h2 id="publish-plan-title">发布结伴计划</h2>
+        <p class="dialog-note">计划将公开展示；联系方式不会公开。</p>
+        <form class="companion-form" id="publish-plan-form">
+          <div class="form-grid"><label>你的称呼<input name="nickname" maxlength="24" required placeholder="例如：湾区徒步客"></label><label>目的地<input name="place" maxlength="80" required placeholder="例如：勃朗峰环线"></label><label>大致时间<input name="date" maxlength="40" required placeholder="例如：2027年6月下旬"></label><label>出发地<input name="from" maxlength="50" placeholder="例如：旧金山湾区"></label><label>行程长度<input name="days" maxlength="30" placeholder="例如：10天"></label><label>计划人数<input name="people" maxlength="30" placeholder="例如：4–6人"></label><label class="form-wide">旅行方式<input name="style" maxlength="50" placeholder="例如：徒步 · 摄影 · 自驾"></label><label class="form-wide">计划说明<textarea name="summary" maxlength="300" required placeholder="介绍路线、节奏和希望找到怎样的同伴"></textarea></label></div>
+          <input name="rank" type="hidden"><button class="companion-submit" type="submit">发布计划</button><span class="form-status" id="publish-plan-status" aria-live="polite"></span>
+        </form>
+      </div>
+    </dialog>
+    <dialog class="companion-dialog" id="apply-plan-dialog" aria-labelledby="apply-plan-title">
+      <div class="companion-dialog-inner">
+        <button class="dialog-close" type="button" data-close-dialog aria-label="关闭">×</button>
+        <h2 id="apply-plan-title">申请同行</h2>
+        <p class="dialog-note" id="apply-plan-context"></p>
+        <form class="companion-form" id="apply-plan-form">
+          <label>你的称呼<input name="nickname" maxlength="24" required placeholder="其他旅行者看到的称呼"></label><label>给发起人的留言<textarea name="message" maxlength="300" required placeholder="简单介绍旅行经验、时间是否灵活，以及为什么想同行"></textarea></label>
+          <input name="planId" type="hidden"><button class="companion-submit" type="submit">提交申请</button><span class="form-status" id="apply-plan-status" aria-live="polite"></span>
+        </form>
+      </div>
+    </dialog>
+    <dialog class="companion-dialog companion-dashboard-dialog" id="companion-dashboard-dialog" aria-labelledby="companion-dashboard-title">
+      <div class="companion-dialog-inner">
+        <button class="dialog-close" type="button" data-close-dialog aria-label="关闭">×</button>
+        <h2 id="companion-dashboard-title">我的结伴</h2>
+        <p class="dialog-note">查看自己发布的计划、收到的申请和申请结果。</p>
+        <div id="companion-dashboard-body"><p class="dashboard-loading">正在读取…</p></div>
+      </div>
+    </dialog>
     <dialog class="companion-dialog" id="wechat-login-dialog" aria-labelledby="wechat-login-title">
       <div class="companion-dialog-inner wechat-login-box">
         <button class="dialog-close" type="button" data-close-dialog aria-label="关闭">×</button>
@@ -68,7 +98,7 @@
     <footer><span>环球旅行达人测评</span><p>前500项参考 Lonely Planet Ultimate Travel List；另增150项全球节庆、朝圣徒步与代表性体验。此生必去每项2分，不去也行每项1分；数据只保存在你的浏览器中。全球华人旅行排名根据中国内地公开出境人次与项目难度估算，仅供娱乐，并非人口抽样调查。</p><a class="visitor-counter" href="https://hits.sh/bayfamily2020.github.io/travel/" target="_blank" rel="noopener" aria-label="查看网站累计访问统计"><img src="https://hits.sh/bayfamily2020.github.io/travel.svg?style=flat-square&amp;label=%E7%B4%AF%E8%AE%A1%E8%AE%BF%E9%97%AE&amp;color=dd6b3d&amp;labelColor=1f4b3b" alt="网站累计访问次数"></a></footer>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
-  <script src="./travelog-links.js?v=20260819-1325" defer></script>\n  <script src="./companion.js?v=20260824-passphrase-v1" defer></script>
+  <script src="./travelog-links.js?v=20260819-1325" defer></script>\n  <script src="./companion.js?v=20260824-mvp-v1" defer></script>
   <script src="./app.js?v=20260820-weakest-category" defer></script>
   <script src="./continent-override.js?v=20260819-1325" defer></script>
   <script src="./experience-override.js?v=20260819-625" defer></script>
