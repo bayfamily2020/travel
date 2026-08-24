@@ -11,6 +11,11 @@ export default {
     try {
       if (url.pathname === "/health") return json({ ok: true }, 200, cors);
       if (url.pathname === "/auth/passphrase" && request.method === "POST") return verifyPassphrase(request, env, cors);
+      if (url.pathname === "/plans" && request.method === "GET") return listPlans(env, cors);
+      if (url.pathname === "/plans" && request.method === "POST") return createPlan(request, env, cors);
+      if (/^\/plans\/[A-Za-z0-9_-]+\/applications$/.test(url.pathname) && request.method === "POST") return createApplication(request, url, env, cors);
+      if (url.pathname === "/me" && request.method === "GET") return getDashboard(request, env, cors);
+      if (/^\/applications\/[A-Za-z0-9_-]+\/respond$/.test(url.pathname) && request.method === "POST") return respondToApplication(request, url, env, cors);
       if (url.pathname === "/auth/challenge" && request.method === "POST") return createChallenge(env, cors);
       if (url.pathname === "/auth/status" && request.method === "GET") return challengeStatus(url, env, cors);
       if (url.pathname === "/wechat/callback" && request.method === "GET") return verifyWechatEndpoint(url, env);
@@ -29,10 +34,147 @@ function corsHeaders(request, env) {
   return {
     "access-control-allow-origin": allowed.includes(origin) ? origin : allowed[0],
     "access-control-allow-methods": "GET,POST,OPTIONS",
-    "access-control-allow-headers": "content-type",
+    "access-control-allow-headers": "content-type,authorization",
     "access-control-max-age": "86400",
     "vary": "Origin"
   };
+}
+
+async function authenticatedUser(request, env) {
+  const match = (request.headers.get("authorization") || "").match(/^Bearer\s+([A-Za-z0-9_-]{30,80})$/i);
+  if (!match) return null;
+  const raw = await env.AUTH_SESSIONS.get(`login:${match[1]}`);
+  if (!raw) return null;
+  const record = JSON.parse(raw);
+  return record.userId ? { id: record.userId } : null;
+}
+
+async function listPlans(env, cors) {
+  const ids = await readIndex(env, "plans:index");
+  const records = await Promise.all(ids.slice(0, 60).map(id => env.AUTH_SESSIONS.get(`plan:${id}`)));
+  const plans = records.filter(Boolean).map(JSON.parse).filter(plan => plan.status === "open").map(publicPlan);
+  return json({ plans }, 200, cors);
+}
+
+async function createPlan(request, env, cors) {
+  const user = await authenticatedUser(request, env);
+  if (!user) return json({ error: "unauthorized" }, 401, cors);
+  const body = await request.json().catch(() => ({}));
+  const plan = {
+    id: randomToken(9),
+    ownerId: user.id,
+    nickname: clean(body.nickname, 24),
+    place: clean(body.place, 80),
+    rank: Number.isFinite(Number(body.rank)) ? Number(body.rank) : null,
+    date: clean(body.date, 40),
+    from: clean(body.from, 50),
+    days: clean(body.days, 30),
+    style: clean(body.style, 50),
+    people: clean(body.people, 30),
+    summary: clean(body.summary, 300),
+    createdAt: Date.now(),
+    status: "open"
+  };
+  if (!plan.nickname || !plan.place || !plan.date || !plan.summary) return json({ error: "missing_fields" }, 400, cors);
+  await env.AUTH_SESSIONS.put(`plan:${plan.id}`, JSON.stringify(plan));
+  await Promise.all([
+    prependIndex(env, "plans:index", plan.id, 100),
+    prependIndex(env, `userplans:${user.id}`, plan.id, 50)
+  ]);
+  return json({ plan: publicPlan(plan) }, 201, cors);
+}
+
+async function createApplication(request, url, env, cors) {
+  const user = await authenticatedUser(request, env);
+  if (!user) return json({ error: "unauthorized" }, 401, cors);
+  const planId = url.pathname.split("/")[2];
+  const plan = await readJson(env, `plan:${planId}`);
+  if (!plan || plan.status !== "open") return json({ error: "plan_not_found" }, 404, cors);
+  if (plan.ownerId === user.id) return json({ error: "own_plan" }, 409, cors);
+  if (await env.AUTH_SESSIONS.get(`applied:${planId}:${user.id}`)) return json({ error: "already_applied" }, 409, cors);
+  const body = await request.json().catch(() => ({}));
+  const application = {
+    id: randomToken(9), planId, applicantId: user.id,
+    nickname: clean(body.nickname, 24),
+    message: clean(body.message, 300),
+    createdAt: Date.now(), status: "pending"
+  };
+  if (!application.nickname || !application.message) return json({ error: "missing_fields" }, 400, cors);
+  await Promise.all([
+    env.AUTH_SESSIONS.put(`application:${application.id}`, JSON.stringify(application)),
+    env.AUTH_SESSIONS.put(`applied:${planId}:${user.id}`, application.id),
+    prependIndex(env, `planapps:${planId}`, application.id, 100),
+    prependIndex(env, `userapps:${user.id}`, application.id, 100)
+  ]);
+  return json({ application: safeApplication(application) }, 201, cors);
+}
+
+async function getDashboard(request, env, cors) {
+  const user = await authenticatedUser(request, env);
+  if (!user) return json({ error: "unauthorized" }, 401, cors);
+  const ownPlanIds = await readIndex(env, `userplans:${user.id}`);
+  const ownPlans = (await Promise.all(ownPlanIds.map(id => readJson(env, `plan:${id}`)))).filter(Boolean);
+  const received = [];
+  for (const plan of ownPlans) {
+    const appIds = await readIndex(env, `planapps:${plan.id}`);
+    const apps = (await Promise.all(appIds.map(id => readJson(env, `application:${id}`)))).filter(Boolean).map(safeApplication);
+    received.push(...apps.map(application => ({ ...application, plan: publicPlan(plan) })));
+  }
+  const sentIds = await readIndex(env, `userapps:${user.id}`);
+  const sentRaw = (await Promise.all(sentIds.map(id => readJson(env, `application:${id}`)))).filter(Boolean);
+  const sent = [];
+  for (const application of sentRaw) {
+    const plan = await readJson(env, `plan:${application.planId}`);
+    if (plan) sent.push({ ...safeApplication(application), plan: publicPlan(plan) });
+  }
+  return json({ ownPlans: ownPlans.map(publicPlan), received, sent }, 200, cors);
+}
+
+async function respondToApplication(request, url, env, cors) {
+  const user = await authenticatedUser(request, env);
+  if (!user) return json({ error: "unauthorized" }, 401, cors);
+  const applicationId = url.pathname.split("/")[2];
+  const application = await readJson(env, `application:${applicationId}`);
+  if (!application) return json({ error: "application_not_found" }, 404, cors);
+  const plan = await readJson(env, `plan:${application.planId}`);
+  if (!plan || plan.ownerId !== user.id) return json({ error: "forbidden" }, 403, cors);
+  const body = await request.json().catch(() => ({}));
+  const decision = body.decision === "accepted" ? "accepted" : body.decision === "declined" ? "declined" : "";
+  if (!decision) return json({ error: "invalid_decision" }, 400, cors);
+  application.status = decision;
+  application.respondedAt = Date.now();
+  await env.AUTH_SESSIONS.put(`application:${application.id}`, JSON.stringify(application));
+  return json({ application: safeApplication(application) }, 200, cors);
+}
+
+function publicPlan(plan) {
+  const { ownerId, ...safe } = plan;
+  return safe;
+}
+
+function safeApplication(application) {
+  const { applicantId, ...safe } = application;
+  return safe;
+}
+
+function clean(value, maxLength) {
+  return String(value || "").trim().replace(/[\u0000-\u001F\u007F]/g, " ").slice(0, maxLength);
+}
+
+async function readJson(env, key) {
+  const raw = await env.AUTH_SESSIONS.get(key);
+  return raw ? JSON.parse(raw) : null;
+}
+
+async function readIndex(env, key) {
+  const value = await readJson(env, key);
+  return Array.isArray(value) ? value : [];
+}
+
+async function prependIndex(env, key, id, limit) {
+  const current = await readIndex(env, key);
+  const next = [id, ...current.filter(value => value !== id)].slice(0, limit);
+  await env.AUTH_SESSIONS.put(key, JSON.stringify(next));
 }
 
 async function verifyPassphrase(request, env, cors) {
