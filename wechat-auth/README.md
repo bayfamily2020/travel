@@ -1,24 +1,27 @@
-# BayFamily 公众号口令登录服务
+# BayFamily Clerk 邮箱登录服务
 
-这个 Worker 校验公众号自动回复的访问口令，不依赖公众号认证、服务器配置或网页 OAuth，也不读取用户资料。
+旅行内容和公开结伴计划可匿名浏览；发布、申请、编辑、删除和处理申请必须先通过 Clerk 邮箱验证码登录。Worker 验证 Clerk session JWT，并用稳定的 Clerk `sub` 用户 ID 记录计划和申请归属。
 
-## 登录流程
+## 前端
 
-1. 用户扫码关注 BayFamily 公众号，发送关键词“结伴旅行”。
-2. 公众号通过关键词自动回复访问口令。
-3. 用户在旅行网站输入口令。
-4. 网站调用 `POST /auth/passphrase`，Worker 校验成功后签发30天登录令牌。
+`index.html` 使用 Clerk 测试环境 Publishable Key 加载 ClerkJS。Publishable Key 可以公开；不要把 Clerk Secret Key 写进代码、Cloudflare Worker 或 GitHub。
 
-同一来源15分钟内最多失败10次。口令应定期更换，并同步修改公众号自动回复和 Worker secret。
+在 Clerk Dashboard 的 **User & Authentication** 中启用 Email，并把登录方式配置为邮箱验证码（Email verification code）。
 
-## 部署前配置
+## Cloudflare Worker
 
-1. 创建 Cloudflare Worker 和 KV namespace，把 namespace ID 填入 `wrangler.toml`。
-2. 设置两个 Worker secret：
-   - `ACCESS_PASSPHRASE`：公众号自动回复给用户的访问口令。
-   - `LOGIN_SIGNING_SECRET`：至少 32 字节的随机字符串，只保存在 Worker secret。
-3. 部署后取得 `https://<worker>.workers.dev` 地址。
-4. 在公众号后台设置关键词“结伴旅行”的自动回复，回复内容包含与 `ACCESS_PASSPHRASE` 完全相同的口令。
-5. 把 Worker 地址填入网站 `companion.js` 的 `WECHAT_AUTH_API`。
+1. 保留 KV binding：变量名 `AUTH_SESSIONS`。
+2. 保留变量 `ALLOWED_ORIGINS`，当前值：
+   `https://bayfamily2020.github.io,https://raw.githack.com`
+3. 将 `worker.js` 部署到现有 Worker。
+4. `ACCESS_PASSPHRASE` 和 `LOGIN_SIGNING_SECRET` 已不再使用，可以删除。
 
-不要把访问口令或 `LOGIN_SIGNING_SECRET` 提交到 GitHub。`WECHAT_TOKEN` 和旧回调接口只为将来升级到正式微信身份认证而保留，当前方案无需配置。
+Worker 会从 Clerk 的公开 JWKS 地址读取签名密钥，不需要 Clerk Secret Key。JWT 的签名、过期时间、issuer 和 `azp` 来源都会校验。
+
+## 测试
+
+```bash
+node worker.test.mjs
+```
+
+当前使用 `pk_test_...` 开发实例，适合预览和测试。正式上线应在 Clerk 创建 Production instance，并按 Clerk 要求绑定自有域名后换成 `pk_live_...`。
