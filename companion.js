@@ -42,18 +42,22 @@
   }
   function renderPlans() { const list = $("companion-plan-list"); if (list) list.innerHTML = plans.length ? plans.map(p => planMarkup(p)).join("") : samplePlans.map(p => planMarkup(p, true)).join(""); }
   async function loadPlans() {
-    try { const result = await api("/plans"); plans = Array.isArray(result.plans) ? result.plans : []; renderPlans(); }
-    catch (_) { plans = []; renderPlans(); }
+    try { const result = await api("/plans"); plans = Array.isArray(result.plans) ? result.plans : []; renderPlans(); enhanceCards(); }
+    catch (_) { plans = []; renderPlans(); enhanceCards(); }
   }
 
   function enhanceCards() {
     document.querySelectorAll(".place-card[data-rank]").forEach(card => {
-      if (card.querySelector(".companion-card-link")) return;
       const rank = Number(card.dataset.rank), name = card.querySelector(".place-name")?.textContent?.trim() || "这个目的地";
-      const link = document.createElement("span"); link.className = "companion-card-link"; link.setAttribute("role","button"); link.setAttribute("tabindex","0"); link.textContent = "🤝 找同伴";
-      link.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); openDestination(rank, name); });
-      link.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDestination(rank, name); } });
-      card.appendChild(link);
+      const count = plans.filter(plan => Number(plan.rank) === rank).length;
+      let link = card.querySelector(".companion-card-link");
+      if (!link) {
+        link = document.createElement("span"); link.className = "companion-card-link"; link.setAttribute("role","button"); link.setAttribute("tabindex","0");
+        link.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); openDestination(rank, name); });
+        link.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.stopPropagation(); openDestination(rank, name); } });
+        card.appendChild(link);
+      }
+      link.textContent = count ? `🤝 ${count}个结伴计划` : "🤝 找同伴";
     });
   }
   function openDialog(dialog) { if (!dialog) return; document.body.classList.add("dialog-open"); typeof dialog.showModal === "function" ? dialog.showModal() : dialog.setAttribute("open",""); }
@@ -159,10 +163,11 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
-    renderPlans(); loadPlans(); enhanceCards(); await initializeClerk();
+    renderPlans(); loadPlans(); enhanceCards();
     const grid = $("grid"); if (grid) new MutationObserver(enhanceCards).observe(grid, { childList:true });
     $("publish-plan-form")?.addEventListener("submit", submitPlan); $("apply-plan-form")?.addEventListener("submit", submitApplication); $("open-companion-dashboard")?.addEventListener("click", () => runAction({ type:"dashboard" }));
     $("clerk-account-button")?.addEventListener("click", () => isSignedIn() ? window.Clerk.openUserProfile() : window.Clerk.openSignIn({ afterSignInUrl:window.location.href, afterSignUpUrl:window.location.href }));
     document.querySelectorAll("dialog").forEach(dialog => dialog.addEventListener("click", event => { if (event.target === dialog) closeDialog(dialog); }));
+    await initializeClerk();
   });
 })();
