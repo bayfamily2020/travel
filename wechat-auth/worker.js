@@ -89,7 +89,7 @@ async function receiveWechatMessage(request, url, env) {
 
   const code = (message.Content || "").trim().toUpperCase();
   if (!/^TRAVEL-[A-Z2-9]{6}$/.test(code)) {
-    return xmlReply(message, "如需登录贝版旅行结伴，请发送网站显示的验证码，例如 TRAVEL-ABC234。");
+    return new Response("success", { headers: { "content-type": "text/plain; charset=utf-8" } });
   }
 
   const sessionId = await env.AUTH_SESSIONS.get(`code:${code}`);
