@@ -100,13 +100,14 @@
   }
 
   const statusText = value => ({ pending:"等待回复", accepted:"发起人愿意同行", declined:"发起人暂不接受" }[value] || value);
+  const contactMarkup = contact => contact && (contact.wechatId || contact.email) ? `<p class="dashboard-contact"><strong>联系方式：</strong>${contact.wechatId ? `微信 ${esc(contact.wechatId)}` : ""}${contact.wechatId && contact.email ? " · " : ""}${contact.email ? `邮箱 ${esc(contact.email)}` : ""}</p>` : "";
   async function openDashboard() {
     const body = $("companion-dashboard-body"); body.innerHTML = `<p class="dashboard-loading">正在读取…</p>`; openDialog($("companion-dashboard-dialog"));
     try {
       const data = await api("/me", {}, true);
       const own = data.ownPlans?.length ? data.ownPlans.map(p => `<div class="dashboard-item"><strong>${esc(p.place)}</strong><p>${esc(p.date)} · ${esc(p.summary)}</p></div>`).join("") : `<p class="dashboard-empty">还没有发布计划。</p>`;
-      const received = data.received?.length ? data.received.map(item => `<div class="dashboard-item"><strong>${esc(item.nickname)} 申请 ${esc(item.plan.place)}</strong><p>${esc(item.message)}</p><span class="dashboard-status">${esc(statusText(item.status))}</span>${item.status === "pending" ? `<div class="dashboard-actions"><button data-respond="accepted" data-application-id="${esc(item.id)}">愿意同行</button><button data-respond="declined" data-application-id="${esc(item.id)}">婉拒</button></div>` : ""}</div>`).join("") : `<p class="dashboard-empty">暂时没有收到申请。</p>`;
-      const sent = data.sent?.length ? data.sent.map(item => `<div class="dashboard-item"><strong>${esc(item.plan.place)}</strong><p>${esc(item.message)}</p><span class="dashboard-status">${esc(statusText(item.status))}</span></div>`).join("") : `<p class="dashboard-empty">还没有申请其他计划。</p>`;
+      const received = data.received?.length ? data.received.map(item => `<div class="dashboard-item"><strong>${esc(item.nickname)} 申请 ${esc(item.plan.place)}</strong><p>${esc(item.message)}</p><span class="dashboard-status">${esc(statusText(item.status))}</span>${contactMarkup(item.contact)}${item.status === "pending" ? `<div class="dashboard-actions"><button data-respond="accepted" data-application-id="${esc(item.id)}">愿意同行</button><button data-respond="declined" data-application-id="${esc(item.id)}">婉拒</button></div>` : ""}</div>`).join("") : `<p class="dashboard-empty">暂时没有收到申请。</p>`;
+      const sent = data.sent?.length ? data.sent.map(item => `<div class="dashboard-item"><strong>${esc(item.plan.place)}</strong><p>${esc(item.message)}</p><span class="dashboard-status">${esc(statusText(item.status))}</span>${contactMarkup(item.plan.contact)}</div>`).join("") : `<p class="dashboard-empty">还没有申请其他计划。</p>`;
       body.innerHTML = `<section class="dashboard-section"><h3>我发布的计划</h3>${own}</section><section class="dashboard-section"><h3>收到的申请</h3>${received}</section><section class="dashboard-section"><h3>我发出的申请</h3>${sent}</section>`;
     } catch (_) { body.innerHTML = `<p class="companion-error">登录可能已过期，请关闭后重新验证。</p>`; }
   }
