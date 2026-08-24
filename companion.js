@@ -1,6 +1,6 @@
 (() => {
   const WECHAT_APP_ID = "wx043cc038eed3bd32";
-  const WECHAT_AUTH_API = "";
+  const WECHAT_AUTH_API = "https://bayfamily-wechat-login.bayfamily2020.workers.dev";
   const LOGIN_STORAGE_KEY = "bayfamily-wechat-login-v1";
   let loginPollTimer = null;
   const samplePlans = [
