@@ -1,5 +1,8 @@
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 const encoder = new TextEncoder();
+const CLERK_ISSUER = "https://rational-sculpin-1836.clerk.accounts.dev";
+const CLERK_JWKS_URL = `${CLERK_ISSUER}/.well-known/jwks.json`;
+let jwksCache = { expiresAt: 0, keys: [] };
 
 export default {
   async fetch(request, env) {
@@ -10,7 +13,6 @@ export default {
 
     try {
       if (url.pathname === "/health") return json({ ok: true }, 200, cors);
-      if (url.pathname === "/auth/passphrase" && request.method === "POST") return verifyPassphrase(request, env, cors);
       if (url.pathname === "/plans" && request.method === "GET") return listPlans(env, cors);
       if (url.pathname === "/plans" && request.method === "POST") return createPlan(request, env, cors);
       if (/^\/plans\/[A-Za-z0-9_-]+$/.test(url.pathname) && request.method === "PATCH") return updatePlan(request, url, env, cors);
@@ -18,10 +20,6 @@ export default {
       if (/^\/plans\/[A-Za-z0-9_-]+\/applications$/.test(url.pathname) && request.method === "POST") return createApplication(request, url, env, cors);
       if (url.pathname === "/me" && request.method === "GET") return getDashboard(request, env, cors);
       if (/^\/applications\/[A-Za-z0-9_-]+\/respond$/.test(url.pathname) && request.method === "POST") return respondToApplication(request, url, env, cors);
-      if (url.pathname === "/auth/challenge" && request.method === "POST") return createChallenge(env, cors);
-      if (url.pathname === "/auth/status" && request.method === "GET") return challengeStatus(url, env, cors);
-      if (url.pathname === "/wechat/callback" && request.method === "GET") return verifyWechatEndpoint(url, env);
-      if (url.pathname === "/wechat/callback" && request.method === "POST") return receiveWechatMessage(request, url, env);
       return json({ error: "not_found" }, 404, cors);
     } catch (error) {
       console.error(error);
@@ -32,7 +30,7 @@ export default {
 
 function corsHeaders(request, env) {
   const origin = request.headers.get("origin") || "";
-  const allowed = (env.ALLOWED_ORIGINS || "https://bayfamily2020.github.io").split(",").map(value => value.trim());
+  const allowed = allowedOrigins(env);
   return {
     "access-control-allow-origin": allowed.includes(origin) ? origin : allowed[0],
     "access-control-allow-methods": "GET,POST,PATCH,DELETE,OPTIONS",
@@ -43,12 +41,50 @@ function corsHeaders(request, env) {
 }
 
 async function authenticatedUser(request, env) {
-  const match = (request.headers.get("authorization") || "").match(/^Bearer\s+([A-Za-z0-9_-]{30,80})$/i);
+  const match = (request.headers.get("authorization") || "").match(/^Bearer\s+([^\s]+)$/i);
   if (!match) return null;
-  const raw = await env.AUTH_SESSIONS.get(`login:${match[1]}`);
-  if (!raw) return null;
-  const record = JSON.parse(raw);
-  return record.userId ? { id: record.userId } : null;
+  const claims = await verifyClerkToken(match[1], env).catch(() => null);
+  return claims?.sub ? { id: claims.sub } : null;
+}
+
+async function verifyClerkToken(token, env) {
+  const parts = token.split(".");
+  if (parts.length !== 3) throw new Error("invalid_jwt");
+  const header = JSON.parse(new TextDecoder().decode(base64UrlBytes(parts[0])));
+  const claims = JSON.parse(new TextDecoder().decode(base64UrlBytes(parts[1])));
+  if (header.alg !== "RS256" || !header.kid) throw new Error("invalid_jwt_header");
+
+  const jwk = (await clerkJwks()).find(key => key.kid === header.kid);
+  if (!jwk) throw new Error("unknown_jwt_key");
+  const publicKey = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
+  const validSignature = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", publicKey, base64UrlBytes(parts[2]), encoder.encode(`${parts[0]}.${parts[1]}`));
+  if (!validSignature) throw new Error("invalid_jwt_signature");
+
+  const now = Math.floor(Date.now() / 1000);
+  if (!claims.sub || claims.iss !== CLERK_ISSUER || !claims.exp || claims.exp <= now || (claims.nbf && claims.nbf > now + 5)) throw new Error("invalid_jwt_claims");
+  const allowed = allowedOrigins(env);
+  if (claims.azp && !allowed.includes(claims.azp)) throw new Error("invalid_authorized_party");
+  return claims;
+}
+
+async function clerkJwks() {
+  if (jwksCache.expiresAt > Date.now() && jwksCache.keys.length) return jwksCache.keys;
+  const response = await fetch(CLERK_JWKS_URL);
+  if (!response.ok) throw new Error("jwks_unavailable");
+  const body = await response.json();
+  if (!Array.isArray(body.keys)) throw new Error("invalid_jwks");
+  jwksCache = { keys: body.keys, expiresAt: Date.now() + 3600000 };
+  return body.keys;
+}
+
+function base64UrlBytes(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const binary = atob(normalized + "=".repeat((4 - normalized.length % 4) % 4));
+  return Uint8Array.from(binary, character => character.charCodeAt(0));
+}
+
+function allowedOrigins(env) {
+  return (env.ALLOWED_ORIGINS || "https://bayfamily2020.github.io").split(",").map(value => value.trim()).filter(Boolean);
 }
 
 async function listPlans(env, cors) {
@@ -243,154 +279,11 @@ async function removeFromIndex(env, key, id) {
   await env.AUTH_SESSIONS.put(key, JSON.stringify(current.filter(value => value !== id)));
 }
 
-async function verifyPassphrase(request, env, cors) {
-  if (!env.ACCESS_PASSPHRASE || !env.LOGIN_SIGNING_SECRET) {
-    return json({ error: "service_not_configured" }, 503, cors);
-  }
-
-  const clientId = request.headers.get("cf-connecting-ip") || "unknown";
-  const rateKey = `passphrase-attempts:${clientId}`;
-  const attempts = Number(await env.AUTH_SESSIONS.get(rateKey) || 0);
-  if (attempts >= 10) return json({ error: "too_many_attempts" }, 429, cors);
-
-  const body = await request.json().catch(() => ({}));
-  const supplied = String(body.passphrase || "").trim();
-  const expected = String(env.ACCESS_PASSPHRASE).trim();
-  if (!supplied || !await constantTimeEqual(supplied, expected)) {
-    await env.AUTH_SESSIONS.put(rateKey, String(attempts + 1), { expirationTtl: 900 });
-    return json({ error: "invalid_passphrase" }, 401, cors);
-  }
-
-  await env.AUTH_SESSIONS.delete(rateKey);
-  const loginToken = randomToken(32);
-  const userId = await stableUserId(loginToken, env.LOGIN_SIGNING_SECRET);
-  await env.AUTH_SESSIONS.put(`login:${loginToken}`, JSON.stringify({ userId, method: "wechat_passphrase" }), { expirationTtl: 2592000 });
-  return json({ loginToken, user: { id: userId, label: "公众号成员" }, expiresIn: 2592000 }, 200, cors);
-}
-
-async function constantTimeEqual(left, right) {
-  const [leftHash, rightHash] = await Promise.all([
-    crypto.subtle.digest("SHA-256", encoder.encode(left)),
-    crypto.subtle.digest("SHA-256", encoder.encode(right))
-  ]);
-  const a = new Uint8Array(leftHash);
-  const b = new Uint8Array(rightHash);
-  let difference = 0;
-  for (let index = 0; index < a.length; index += 1) difference |= a[index] ^ b[index];
-  return difference === 0;
-}
-
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data), { status, headers: { ...JSON_HEADERS, ...extra } });
-}
-
-async function createChallenge(env, cors) {
-  const sessionId = randomToken(24);
-  const code = `TRAVEL-${randomCode(6)}`;
-  const expiresIn = 300;
-  const record = { status: "pending", createdAt: Date.now(), code };
-
-  await Promise.all([
-    env.AUTH_SESSIONS.put(`session:${sessionId}`, JSON.stringify(record), { expirationTtl: expiresIn }),
-    env.AUTH_SESSIONS.put(`code:${code}`, sessionId, { expirationTtl: expiresIn })
-  ]);
-
-  return json({ sessionId, code, expiresIn }, 201, cors);
-}
-
-async function challengeStatus(url, env, cors) {
-  const sessionId = url.searchParams.get("session");
-  if (!sessionId || !/^[A-Za-z0-9_-]{20,80}$/.test(sessionId)) return json({ error: "invalid_session" }, 400, cors);
-  const raw = await env.AUTH_SESSIONS.get(`session:${sessionId}`);
-  if (!raw) return json({ status: "expired" }, 404, cors);
-
-  const record = JSON.parse(raw);
-  if (record.status !== "verified") return json({ status: "pending" }, 200, cors);
-
-  return json({
-    status: "verified",
-    loginToken: record.loginToken,
-    user: { id: record.userId, label: "微信用户" }
-  }, 200, cors);
-}
-
-async function verifyWechatEndpoint(url, env) {
-  const signature = url.searchParams.get("signature") || "";
-  const timestamp = url.searchParams.get("timestamp") || "";
-  const nonce = url.searchParams.get("nonce") || "";
-  const echo = url.searchParams.get("echostr") || "";
-  if (!await validWechatSignature(signature, timestamp, nonce, env.WECHAT_TOKEN)) return new Response("invalid signature", { status: 403 });
-  return new Response(echo, { headers: { "content-type": "text/plain; charset=utf-8" } });
-}
-
-async function receiveWechatMessage(request, url, env) {
-  const signature = url.searchParams.get("signature") || "";
-  const timestamp = url.searchParams.get("timestamp") || "";
-  const nonce = url.searchParams.get("nonce") || "";
-  if (!await validWechatSignature(signature, timestamp, nonce, env.WECHAT_TOKEN)) return new Response("invalid signature", { status: 403 });
-
-  const xml = await request.text();
-  const message = parseWechatXml(xml);
-  if (message.MsgType !== "text") return new Response("success", { headers: { "content-type": "text/plain; charset=utf-8" } });
-
-  const code = (message.Content || "").trim().toUpperCase();
-  if (!/^TRAVEL-[A-Z2-9]{6}$/.test(code)) {
-    return new Response("success", { headers: { "content-type": "text/plain; charset=utf-8" } });
-  }
-
-  const sessionId = await env.AUTH_SESSIONS.get(`code:${code}`);
-  if (!sessionId) return xmlReply(message, "验证码无效或已过期，请回到旅行网站重新获取。");
-
-  const loginToken = randomToken(32);
-  const userId = await stableUserId(message.FromUserName, env.LOGIN_SIGNING_SECRET);
-  const verified = { status: "verified", verifiedAt: Date.now(), userId, loginToken };
-
-  await Promise.all([
-    env.AUTH_SESSIONS.put(`session:${sessionId}`, JSON.stringify(verified), { expirationTtl: 300 }),
-    env.AUTH_SESSIONS.put(`login:${loginToken}`, JSON.stringify({ userId, openId: message.FromUserName }), { expirationTtl: 2592000 }),
-    env.AUTH_SESSIONS.delete(`code:${code}`)
-  ]);
-
-  return xmlReply(message, "微信身份验证成功。请返回旅行网站，页面将自动完成登录。");
-}
-
-async function validWechatSignature(signature, timestamp, nonce, token) {
-  if (!signature || !timestamp || !nonce || !token) return false;
-  const value = [token, timestamp, nonce].sort().join("");
-  const digest = await crypto.subtle.digest("SHA-1", encoder.encode(value));
-  return hex(digest) === signature.toLowerCase();
-}
-
-async function stableUserId(openId, secret) {
-  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  return hex(await crypto.subtle.sign("HMAC", key, encoder.encode(openId))).slice(0, 24);
-}
-
-function parseWechatXml(xml) {
-  const fields = ["ToUserName", "FromUserName", "CreateTime", "MsgType", "Content"];
-  return Object.fromEntries(fields.map(name => {
-    const match = xml.match(new RegExp(`<${name}><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${name}>|<${name}>([\\s\\S]*?)<\\/${name}>`));
-    return [name, match ? (match[1] ?? match[2] ?? "") : ""];
-  }));
-}
-
-function xmlReply(message, content) {
-  const safe = String(content).replace(/]]>/g, "]]]]><![CDATA[>");
-  const body = `<xml><ToUserName><![CDATA[${message.FromUserName}]]></ToUserName><FromUserName><![CDATA[${message.ToUserName}]]></FromUserName><CreateTime>${Math.floor(Date.now()/1000)}</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[${safe}]]></Content></xml>`;
-  return new Response(body, { headers: { "content-type": "application/xml; charset=utf-8" } });
-}
-
-function randomCode(length) {
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = crypto.getRandomValues(new Uint8Array(length));
-  return Array.from(bytes, byte => alphabet[byte % alphabet.length]).join("");
 }
 
 function randomToken(bytesLength) {
   const bytes = crypto.getRandomValues(new Uint8Array(bytesLength));
   return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
-
-function hex(buffer) {
-  return Array.from(new Uint8Array(buffer), byte => byte.toString(16).padStart(2, "0")).join("");
 }
