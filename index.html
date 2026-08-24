@@ -54,9 +54,10 @@
         <button class="dialog-close" type="button" data-close-dialog aria-label="关闭">×</button>
         <div class="wechat-logo" aria-hidden="true">微</div>
         <h2 id="wechat-login-title">使用微信确认身份</h2>
-        <p class="dialog-note" id="wechat-login-context">微信登录后才可以使用结伴功能。</p>
+        <p class="dialog-note" id="wechat-login-context">完成公众号验证码后才可以使用结伴功能。</p>
         <ul><li>旅行内容和公开计划仍可自由浏览</li><li>只有发布、申请和回复需要登录</li><li>双方确认前不会显示微信号等联系方式</li></ul>
-        <button class="wechat-login-button" id="wechat-login-button" type="button">微信登录</button>
+        <button class="wechat-login-button" id="wechat-login-button" type="button">获取公众号验证码</button>
+        <div class="wechat-code-panel" id="wechat-code-panel" hidden><span>发送下面的完整验证码</span><strong id="wechat-login-code">TRAVEL-XXXXXX</strong><small>打开微信 → 搜索并进入 BayFamily 公众号 → 发送验证码</small></div>
         <span class="wechat-login-status" id="wechat-login-status" aria-live="polite"></span>
         <p class="privacy-note">网站不会要求或保存你的微信密码。</p>
       </div>
