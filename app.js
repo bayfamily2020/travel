@@ -532,6 +532,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const chunks = await Promise.all(Array.from({length:13}, (_,i) => fetch(`./data-${i}.json?v=20260818-rank-601`, {cache:"no-store"}).then(r => r.json())));
     places = chunks.flat();
+    window.BAYFAMILY_TRAVEL_PLACES = places.map(({ rank, name }) => ({ rank, name }));
+    document.dispatchEvent(new CustomEvent("bayfamily:places-ready"));
     const forcedOnePointRanks = new Set([517,520,586,603,607]);
     places.forEach(p => { if (forcedOnePointRanks.has(p.rank)) { p.points = 1; p.fame = "不去也行"; } });
     const base = places.slice(0, 500);
